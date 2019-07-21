@@ -1,0 +1,44 @@
+#border_recording {
+    pointer-events: none;
+    border: 5px solid #d00;
+    width: 100%;
+    height: 100%;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 10000;
+    box-sizing: border-box;
+}
+
+#btn_timerecord_wrapper {
+    width: 100%;
+    text-align: center;
+}
+
+.btn_timerecord {
+    margin-right:1rem !important;
+}
+
+.btn_timerecord_clicked>i, .btn_timerecord_init>i {
+    font-size: 1.5em;
+    line-height: 0em;
+    vertical-align: sub;
+}
+
+.init_timerecord_alert {
+    position: fixed;
+    top: 40%;
+    left: 0;
+    width: 100%;
+    background: rgba(0,0,0,0.6);
+    z-index: 10000;
+    font-weight: bold;
+    color: white;
+    text-align: center;
+    font-size: 1.3em;
+    padding-top: 20px;
+}
+.init_timerecord_alert button {
+    margin-top: 10px;
+    margin-bottom: 20px;
+}

@@ -1,0 +1,48 @@
+{
+    "manifest_version": 2,
+    "name": "Super Turkers",
+    "minimum_chrome_version": "24.0.1307.0",
+    "version": "0.2.6",
+    "homepage_url": "https://www.superturker.com",
+    "icons": {
+        "16": "icon_16.png",
+        "128": "icon_128.png"
+    },
+    "page_action": {
+      "default_title": "First icon"
+    },
+    "content_scripts": [
+        {
+            "matches": [
+                "http://*/*",
+                "https://*/*"
+            ],
+            "all_frames": true,
+            "js": [
+                "front.js",
+                "scripts/jquery-1.12.4.min.js",
+                "scripts/setting.js",
+                "scripts/misc.js",
+                "scripts/HITScrapper.js",
+                "scripts/postSurvey.js"
+            ],
+            "css": [
+                "css/style.css"
+            ]
+        }
+    ],
+    "web_accessible_resources": ["html/install.html","css/style.css"],
+    "background": {
+        "scripts": [
+            "back.js",
+            "scripts/jquery-1.12.4.min.js",
+            "scripts/setting.js",
+            "scripts/misc.js",
+            "scripts/background.js"
+        ],
+        "persistent": true
+    },
+    "permissions": [
+        "webRequest", "webRequestBlocking", "tabs", "management","storage","<all_urls>"
+    ]
+}

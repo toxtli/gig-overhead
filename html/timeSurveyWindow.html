@@ -1,0 +1,145 @@
+<html>
+<head>
+    <title>HIT Post Survey</title>
+</head>
+<style>
+    body { font-size: 1.0em; background:rgb(213, 233, 247); }
+    .bold { font-weight:bold; }
+    .hit-info { width:50%; margin:0 auto; }
+    .title {
+        width:50%;
+        text-align:center;
+        margin:10px auto 30px auto;
+        font-size: 1.2em;
+        background:#f9f585;
+        font-weight:bold;
+    }
+    .question {
+        width:80%;
+        margin:30px auto 20px auto;
+        text-align:left;
+        font-weight: bold;
+        text-decoration:underline;
+    }
+    .likert-wrapper {
+        width:80%;
+        margin:0 auto;
+        background:white;
+        border-radius:10px;
+        padding:5px;
+        box-sizing:border-box;
+        overflow: auto;
+    }
+    #submit {
+        padding: 15px;
+        background:#19a0ff;
+        color:white;
+        font-size:1.2em;
+        width:150px;
+        margin:20px auto;
+        display:block;
+    }
+    #submit:disabled { background:#b3b3b3; }
+    .clear { clear:both; }
+    .container {
+        display: block;
+        position: relative;
+        padding-left: 35px;
+        margin-bottom: 12px;
+        cursor: pointer;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+    }
+    label {
+        height:3em;
+        display: inline;
+        float:left;
+        width:11%;
+        margin:1em 2.5%;
+    } 
+    .container input { position: absolute; opacity: 0; cursor: pointer; }
+    .checkmark {
+        position: absolute;
+        top: 0;
+        left: 0;
+        height: 25px;
+        width: 25px;
+        background-color: #eee;
+        border-radius: 50%;
+    }
+    .container:hover input ~ 
+    .checkmark { background-color: #ccc; }
+    .container input:checked ~
+    .checkmark { background-color: #2196F3; }
+    .checkmark:after { content: ""; position: absolute; display: none; }
+    .container input:checked ~
+    .checkmark:after { display: block; }
+    .container .checkmark:after {
+        top: 9px;
+        left: 9px;
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: white;
+    } 
+    #time_working {
+        color: red;
+    }
+
+    .time_table {
+        border-collapse: collapse;
+        border: 1px solid;
+        margin: 0 auto;
+        width: 80%;
+    }
+    .time_table td {
+        border: 1px solid;
+        padding: 10px;
+        text-align: center; 
+    }
+    .time_table label {
+        float: initial;
+        width: initial;
+    }
+    #time_all_t, #time_focus_t, #time_user_t {
+        font-weight: bold;
+        color: rgb(255,32,0);
+    }
+</style>
+<body>
+    <input id="hit_id" type="hidden" value="" />
+    <input id="worker_id" type="hidden" value="" />
+    <input id="group_id" type="hidden" value="" />
+    <input id="latest_answer" type="hidden" value="" />
+    <div class="title">SuperTurkers Post-HIT Survey</div>
+    <div class="hit-info">
+        <span id="resubmit_message" class="bold" style="color:blue;"></span><br><br>
+        *<span class="bold">Please answer this short post-HIT survey.<br><span style="color:red;">You will earn $0.02 for completing this survey!</span></span><br><br>
+        <span class="bold">You have just <span id="next_action" style="color:red"></span> the following HIT:</span><br>
+        <span class="bold">HIT Id:</span> <span id="info_hit_id"></span><br>
+        <span class="bold">Requester:</span> <span id="info_requester"></span><br>
+        <span class="bold">Title:</span> <span id="info_title"></span><br>
+        <span class="bold">Reward:</span> $<span id="info_reward"></span><br>
+    </div>
+
+    <div class="question">Q. Which of the followings most represents the time you actually spend on this HIT? (If multiple choices are applicable, choose one of them.)</div>
+    <div qnum="0" class="likert-wrapper">
+        <table class="time_table">
+            <tr><td><input type="radio" name="timerecord" class="timerecord_all" id="timerecord_all" value="" /></td>
+                <td><label for="timerecord_all">Total time passed after accepting the HIT</td><td><span id="time_all_t"></span></td></tr>
+            <tr><td><input type="radio" name="timerecord" class="timerecord_focus" id="timerecord_focus" value="" /></td>
+                <td><label for="timerecord_focus">Total time with focus on the HIT</td><td><span id="time_focus_t"></span></td></tr>
+            <tr><td><input type="radio" name="timerecord" class="timerecord_user_recorded" id="timerecord_user" value="" /></td>
+                <td><label for="timerecord_user">Total time recorded by you</td><td><span id="time_user_t"></span></td></tr>
+            <tr><td><input type="radio" name="timerecord" class="timerecord_user_provided" id="timerecord_na" value="na" /></td>
+                <td><label for="timerecord_na">None of the above (<b>please provide correct one</b>)</td><td><input type="number" id="timerecord_na_min" style="width:50px;font-size: 1.2em;" />mins<input type="number" id="timerecord_na_sec" style="width:50px;font-size: 1.2em;" />secs</td></tr>
+        </table>
+    </div>
+
+    <button id="submit" disabled>Submit</button>
+</body>
+<script src="../scripts/jquery-1.12.4.min.js"></script>
+<script src="../scripts/post_time.js"></script>
+<script src="../scripts/setting.js"></script>
