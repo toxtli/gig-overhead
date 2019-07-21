@@ -1,15 +1,15 @@
 {
     "manifest_version": 2,
-    "name": "Super Turkers",
+    "name": "Gig Overhead",
     "minimum_chrome_version": "24.0.1307.0",
-    "version": "0.2.6",
-    "homepage_url": "https://www.superturker.com",
+    "version": "0.1.0",
+    "homepage_url": "https://www.hcilab.ml",
     "icons": {
         "16": "icon_16.png",
         "128": "icon_128.png"
     },
     "page_action": {
-      "default_title": "First icon"
+      "default_title": "Gig Overhead"
     },
     "content_scripts": [
         {
