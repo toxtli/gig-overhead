@@ -1,0 +1,6 @@
+[
+	"platforms/mturk.json",
+	"platforms/upwork.json",
+	"platforms/freelancer.json",
+	"platforms/fiverr.json"
+]

@@ -1,42 +1,46 @@
 {
+	"name": "MTURK",
+	"domains": [
+		"https://worker.mturk.com"
+	],
 	"urls": [
 		{
 			"url": "https://worker.mturk.com",
 			"type": "SEARCHING",				
-			"subtype": TASKS_LIST"
+			"subtype": "TASKS_LIST"
 		},
 		{
 			"url": "https://worker.mturk.com/dashboard(.*)",
 			"type": "PROFILE",				
-			"subtype": WORKER_DASHBOARD"
+			"subtype": "WORKER_DASHBOARD"
 		},
 		{
 			"url": "https://worker.mturk.com/?filters(.*)",
 			"type": "SEARCHING",				
-			"subtype": TASKS_LIST_FILTER"
+			"subtype": "TASKS_LIST_FILTER"
 		},
 		{
 			"url": "https://worker.mturk.com/projects/(.*)/tasks?ref(.*)",
 			"type": "SEARCHING",				
-			"subtype": TASKS_PREVIEW"
+			"subtype": "TASKS_PREVIEW"
 		},
 		{
 			"url": "https://worker.mturk.com/projects/(.*)/tasks/(.*)?assignment_id=(.*)",
 			"type": "SEARCHING",				
-			"subtype": TASKS_INFO",
+			"subtype": "TASKS_INFO",
 			"js": {
 				"selector": ""
 			}
 		},
 		{
-		`	"url": "https://worker.mturk.com/projects/(.*)/tasks/(.*)?assignment_id(.*)",
+			"url": "https://worker.mturk.com/projects/(.*)/tasks/(.*)?assignment_id(.*)",
 			"type": "WORKING",				
-			"subtype": TASKS_ACCEPTED"
+			"subtype": "TASKS_ACCEPTED"
 		},
 		{
-		`	"url": "https://worker.mturk.com/projects?filters(.*)",
+			"url": "https://worker.mturk.com/projects?filters(.*)",
 			"type": "SEARCHING",				
-			"subtype": TASKS_REJECTED",
+			"subtype": "TASKS_REJECTED",
 			"js": {
 				"selector": ""
 			}
@@ -44,12 +48,12 @@
 		{
 			"url": "https://worker.mturk.com/contact_requester/hit_type_messages/new?assignment_id=(.*)",
 			"type": "COMMUNICATION",				
-			"subtype": SEND_MESSAGE"
+			"subtype": "MESSAGES_SEND"
 		},
 		{
 			"url": "https://worker.mturk.com/requesters/(.*)/projects",
 			"type": "WORKING",				
-			"subtype": TASK_SUBMITED",
+			"subtype": "TASK_SUBMITED",
 			"js": {
 				"selector": ""
 			}
@@ -57,27 +61,27 @@
 		{
 			"url": "https://worker.mturk.com/earnings",
 			"type": "PROFILE",				
-			"subtype": WORKER_EARNINGS"
+			"subtype": "WORKER_EARNINGS"
 		},
 		{
 			"url": "https://worker.mturk.com/qualifications/assigned",
 			"type": "PROFILE",				
-			"subtype": WORKER_QUALIFICATIONS"
+			"subtype": "WORKER_QUALIFICATIONS"
 		},
 		{
 			"url": "https://worker.mturk.com/qualifications/pending",
 			"type": "PROFILE",				
-			"subtype": WORKER_QUALIFICATIONS_PENDING"
+			"subtype": "WORKER_QUALIFICATIONS_PENDING"
 		},
 		{
 			"url": "https://worker.mturk.com/tasks",
 			"type": "SEARCHING",				
-			"subtype": TASK_QUEUE"
+			"subtype": "TASK_QUEUE"
 		},
 		{
 			"url": "https://worker.mturk.com/status_details/(.*)",
 			"type": "SEARCHING",				
-			"subtype": TASK_STATUS"
+			"subtype": "TASK_STATUS"
 		}
 	]
 }

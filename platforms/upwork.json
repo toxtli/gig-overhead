@@ -1,0 +1,48 @@
+{
+	"name": "UPWORK",
+	"domains": [
+		"https://www.upwork.com"
+	],
+	"urls": [
+		{
+			"url": "https://www.upwork.com/ab/find-work/(.*)",
+			"type": "SEARCHING",				
+			"subtype": "TASKS_LIST"
+		},
+		{
+			"url": "https://www.upwork.com/o/jobs/browse/?(.*)",
+			"type": "SEARCHING",				
+			"subtype": "TASKS_LIST_FILTER"
+		},
+		{
+			"url": "https://www.upwork.com/messages/rooms/(.*)",
+			"type": "COMMUNICATION",				
+			"subtype": "MESSAGES_READ"
+		},
+		{
+			"url": "https://www.upwork.com/ab/f/contracts/(.*)#messages",
+			"type": "COMMUNICATION",				
+			"subtype": "MESSAGES_READ_CONTRACT"
+		},
+		{
+			"url": "https://www.upwork.com/ab/f/home/",
+			"type": "SEARCHING",				
+			"subtype": "TASKS_LIST_ACTIVE"
+		},
+		{
+			"url": "https://www.upwork.com/ab/proposals/job/(.*)/apply/(.*)",
+			"type": "PROPOSAL",				
+			"subtype": "TASKS_APPLY"
+		},
+		{
+			"url": "https://www.upwork.com/ab/f/offer/(.*)",
+			"type": "PROPOSAL",				
+			"subtype": "PROPOSAL_OFFER"
+		},
+		{
+			"url": "https://www.upwork.com/ab/f/contracts/(.*)/proposals/new",
+			"type": "PROPOSAL",				
+			"subtype": "PROPOSAL_CONTRACT"
+		}
+	]
+}

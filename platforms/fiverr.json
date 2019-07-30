@@ -1,0 +1,28 @@
+{
+	"name": "FIVERR",
+	"domains": [
+		"https://www.fiverr.com"
+	],
+	"urls": [
+		{
+			"url": "https://www.fiverr.com/users/(.*)/manage_orders?(.*)",
+			"type": "LEARNING",				
+			"subtype": "TASKS_DESCRIPTION"
+		},
+		{
+			"url": "https://www.fiverr.com/inbox?(.*)",
+			"type": "COMMUNICATION",				
+			"subtype": "MESSAGES_READ"
+		},
+		{
+			"url": "https://www.fiverr.com/users/(.*)/requests",
+			"type": "SEARCHING",				
+			"subtype": "TASKS_SEARCH"
+		},
+		{
+			"url": "https://www.fiverr.com/(.*)/(.*)",
+			"type": "LEARNING",				
+			"subtype": "TASKS_PREVIEW"
+		}
+	]
+}
