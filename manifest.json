@@ -19,16 +19,17 @@
             ],
             "all_frames": true,
             "js": [
-                "front.js"
+                "js/front.js"
             ]
         }
     ],
     "web_accessible_resources": [
-        "platforms/*"
+        "platforms/*",
+        "js/*"
     ],
     "background": {
         "scripts": [
-            "back.js"
+            "js/back.js"
         ],
         "persistent": true
     },
