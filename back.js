@@ -27,6 +27,18 @@ function toogleStatus(callback) {
   });
 }
 
+function getRandomToken() {
+    // E.g. 8 * 32 = 256 bits token
+    var randomPool = new Uint8Array(16);
+    crypto.getRandomValues(randomPool);
+    var hex = '';
+    for (var i = 0; i < randomPool.length; ++i) {
+        hex += randomPool[i].toString(16);
+    }
+    // E.g. db18458e2782b2b77e36769c569e263a53885a9944dd0a861e5064eac16f1a
+    return hex;
+}
+
 chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
   console.log('LOADED');
   lastTabId = tabs[0].id;
@@ -53,6 +65,12 @@ chrome.pageAction.onClicked.addListener(function(tab) {
   });
 });
 
+chrome.storage.local.get(['user_id'], (result) => {
+  if (!result.hasOwnProperty('user_id')) {
+    var userId = getRandomToken();
+    chrome.storage.local.set({'user_id': userId}, () => {});
+  }
+});
 
 // var lastTabId = 0;
 // var tab_clicks = {};

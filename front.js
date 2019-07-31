@@ -57,9 +57,13 @@ function urlToRegex(url) {
 }
 
 function logSite(obj) {
-  obj.current = globalUrl;
-  obj.time = (new Date()).getTime();
-  console.log(obj);
+  chrome.storage.local.get(['working_status','user_id'], (result) => {
+    obj.current = globalUrl;
+    obj.time = (new Date()).getTime();
+    obj.status = result['working_status'];
+    obj.user = result['user_id'];
+    console.log(obj);
+  });
 }
 
 var configFile = 'platforms/index.json';
