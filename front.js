@@ -5,12 +5,20 @@ chrome.storage.local.get(['stored_worker_id','worker_record_id','test_data'], fu
 	chrome.storage.local.set({'test_data': 'test2'}, function(){}); 
 });
 
-var platformDomains = [/^https\:\/\/worker(sandbox)?\.mturk\.com.*/];
-console.log(platformDomains);
+var defaultSite = {
+  "url": "",
+  "type": "OTHER",        
+  "subtype": "OTHER",
+  "platform": "OTHER",
+  "time": null
+}
+
 var globalUrl = window.location.href;
 console.log(globalUrl);
-console.log('isInWebsite');
-console.log(isInWebsite(globalUrl));
+
+RegExp.escape = function(string) {
+  return string.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&')
+};
 
 function loadConfiguration(configFile) {
   return new Promise((resolve, reject) => {
@@ -37,11 +45,21 @@ function loadConfiguration(configFile) {
   });
 }
 
-function isInWebsite(url){ //check if page is mTurk
-  for (var re of platformDomains) {
-    if(url.match(re)) return true;  
-  }
-    return false;
+function clone(obj) {
+  return JSON.parse(JSON.stringify(obj));
+}
+
+function urlToRegex(url) {
+  url = url.replace(/\(\.\*\)/g, "___");
+  url = RegExp.escape(url);
+  url = url.replace(/___/g, "(.*)") + '$';
+  return new RegExp(url);
+}
+
+function logSite(obj) {
+  obj.current = globalUrl;
+  obj.time = (new Date()).getTime();
+  console.log(obj);
 }
 
 var configFile = 'platforms/index.json';
@@ -51,12 +69,34 @@ loadConfiguration(configFile).then(configData => {
   console.log('Loading complete');
   var hostname = (new URL(globalUrl)).hostname;
   console.log(hostname);
+  var hostFound = false;
   Object.keys(configData).forEach(key => {
     if (key == hostname) {
+      hostFound = true;
       console.log('Hostname found');
-      console.log(configData[key]);
+      var urlFound = false;
+      var lastSite = null;
+      for (var configObj of configData[key]) {
+        var regex = urlToRegex(configObj.url);
+        var matches = globalUrl.match(regex);
+        lastSite = configObj;
+        if (matches) {
+          var urlFound = true;
+          console.log('URL matched');
+          logSite(configObj);
+          break;
+        }
+      }
+      if (!urlFound) {
+        var obj = clone(lastSite);
+        obj.type = 'UNKNOWN';
+        obj.subtype = 'UNKNOWN';
+        logSite(obj);
+      }
     }
-  })
+  });
+  if (!hostFound) {
+    var obj = clone(defaultSite);
+    logSite(obj);
+  }
 });
-
-

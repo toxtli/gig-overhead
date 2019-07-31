@@ -1,8 +1,5 @@
 {
 	"name": "UPWORK",
-	"domains": [
-		"https://www.upwork.com"
-	],
 	"urls": [
 		{
 			"url": "https://www.upwork.com/ab/find-work/(.*)",

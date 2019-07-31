@@ -1,8 +1,5 @@
 {
 	"name": "FIVERR",
-	"domains": [
-		"https://www.fiverr.com"
-	],
 	"urls": [
 		{
 			"url": "https://www.fiverr.com/users/(.*)/manage_orders?(.*)",

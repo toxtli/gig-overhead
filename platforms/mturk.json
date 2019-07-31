@@ -1,11 +1,8 @@
 {
 	"name": "MTURK",
-	"domains": [
-		"https://worker.mturk.com"
-	],
 	"urls": [
 		{
-			"url": "https://worker.mturk.com",
+			"url": "https://worker.mturk.com/",
 			"type": "SEARCHING",				
 			"subtype": "TASKS_LIST"
 		},

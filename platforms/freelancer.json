@@ -1,8 +1,5 @@
 {
 	"name": "FREELANCER",
-	"domains": [
-		"https://www.freelancer.com"
-	],
 	"urls": [
 		{
 			"url": "https://www.freelancer.com/dashboard",
@@ -26,11 +23,6 @@
 		},
 		{
 			"url": "https://www.freelancer.com/projects/(.*)/(.*)/details",
-			"type": "SEARCHING",				
-			"subtype": "TASKS_DETAILS"
-		},
-		{
-			"url": "https://www.freelancer.com/projects/(.*)/(.*)/details",
 			"type": "PROPOSAL",				
 			"subtype": "PROPOSAL_PROJECT",
 			"js": {
@@ -38,7 +30,12 @@
 			}
 		},
 		{
-			"url": "https://www.freelancer.com/dashboard/projects.php",
+			"url": "https://www.freelancer.com/projects/(.*)/(.*)/details",
+			"type": "SEARCHING",				
+			"subtype": "TASKS_DETAILS"
+		},
+		{
+			"url": "https://www.freelancer.com/dashboard/projects.php?(.*)",
 			"type": "LEARNING",				
 			"subtype": "TASKS_PROJECTS"
 		}
