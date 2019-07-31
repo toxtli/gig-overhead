@@ -31,7 +31,11 @@
             ]
         }
     ],
-    "web_accessible_resources": ["html/install.html","css/style.css"],
+    "web_accessible_resources": [
+        "html/install.html",
+        "css/style.css",
+        "platforms/*"
+    ],
     "background": {
         "scripts": [
             "back.js",
