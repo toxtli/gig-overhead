@@ -1,13 +1,13 @@
 console.log('YEIII');
 
 var libraries = [
-  chrome.extension.getURL("js/firebase-app.js"),
-  chrome.extension.getURL("js/firebase-firestore.js"),
+  "https://www.gstatic.com/firebasejs/6.3.3/firebase-app.js",
+  "https://www.gstatic.com/firebasejs/6.3.3/firebase-firestore.js",
   chrome.extension.getURL("js/inject.js")
 ];
 
 function loadLibraries(libraries) {
-  if (loadLibraries.length > 0) {
+  if (libraries.length > 0) {
     var library = libraries.shift();
     console.log(library);
     var script = document.createElement('script');
