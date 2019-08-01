@@ -7,7 +7,7 @@
 			"subtype": "TASKS_DESCRIPTION"
 		},
 		{
-			"url": "https://www.fiverr.com/inbox?(.*)",
+			"url": "https://www.fiverr.com/inbox(.*)",
 			"type": "COMMUNICATION",				
 			"subtype": "MESSAGES_READ"
 		},
