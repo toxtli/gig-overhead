@@ -40,17 +40,6 @@ function loadLibraries(libraries, callback) {
   }
 }
 
-// var firebaseConfig = {
-//   apiKey: "AIzaSyC00cL8EiHK-lCmyak2AS_dQdkFhiufhik",
-//   authDomain: "mturk-research.firebaseapp.com",
-//   databaseURL: "https://mturk-research.firebaseio.com",
-//   projectId: "mturk-research",
-//   storageBucket: "mturk-research.appspot.com",
-//   messagingSenderId: "268474160818",
-//   appId: "1:268474160818:web:6644d78d14e7dcf9"
-// };
-// firebase.initializeApp(firebaseConfig);
-
 RegExp.escape = function(string) {
   return string.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&')
 };
@@ -105,22 +94,6 @@ function logSite(obj) {
     });
   });
 }
-
-// function storeObject(obj) {
-//   return new Promise((resolve, reject) => {
-//     console.log(obj);
-//     var db = firebase.firestore();
-//     db.collection("records").add(obj)
-//     .then(docRef => {
-//       console.log("Document written with ID: ", docRef.id);
-//       resolve(docRef);
-//     })
-//     .catch(error => {
-//       console.error("Error adding document: ", error);
-//       reject(error);
-//     })
-//   });
-// }
 
 function init() {
   loadConfiguration(configFile).then(configData => {
