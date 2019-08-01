@@ -1,8 +1,6 @@
-console.log('YEIII');
+//console.log('YEIII');
 
 var libraries = [
-  "https://www.gstatic.com/firebasejs/6.3.3/firebase-app.js",
-  "https://www.gstatic.com/firebasejs/6.3.3/firebase-firestore.js",
   chrome.extension.getURL("js/inject.js")
 ];
 
@@ -11,7 +9,7 @@ var platformsData = {};
 var platformCount = 0;
 
 var globalUrl = window.location.href;
-console.log(globalUrl);
+//console.log(globalUrl);
 
 var defaultSite = {
   "url": "",
@@ -30,7 +28,7 @@ function runCode(code) {
 function loadLibraries(libraries, callback) {
   if (libraries.length > 0) {
     var library = libraries.shift();
-    console.log(library);
+    //console.log(library);
     var script = document.createElement('script');
     script.src = library;
     script.onload = function(){
@@ -100,8 +98,9 @@ function logSite(obj) {
       obj.time = (new Date()).getTime();
       obj.status = result['working_status'];
       obj.user = result['user_id'];
-      console.log(obj);
-      runCode("storeObject('" + JSON.stringify(obj) + "')");
+      var data = [obj.time, obj.user, obj.platform, obj.type, obj.subtype, obj.status, obj.current];
+      console.log(JSON.stringify(data));
+      runCode("storeObject('" + JSON.stringify(data) + "')");
       //storeObject(obj).then(docRef => resolve(docRef)).catch(error => reject(error));
     });
   });
@@ -125,14 +124,14 @@ function logSite(obj) {
 
 function init() {
   loadConfiguration(configFile).then(configData => {
-    console.log('Loading complete');
+    //console.log('Loading complete');
     var hostname = (new URL(globalUrl)).hostname;
-    console.log(hostname);
+    //console.log(hostname);
     var hostFound = false;
     Object.keys(configData).forEach(key => {
       if (key == hostname) {
         hostFound = true;
-        console.log('Hostname found');
+        //console.log('Hostname found');
         var urlFound = false;
         var lastSite = null;
         for (var configObj of configData[key]) {
@@ -141,7 +140,7 @@ function init() {
           lastSite = configObj;
           if (matches) {
             var urlFound = true;
-            console.log('URL matched');
+            //console.log('URL matched');
             logSite(configObj);
             break;
           }
@@ -162,6 +161,6 @@ function init() {
 }
 
 loadLibraries(libraries, ()=>{
-  console.log('LOADED!');
+  //console.log('LOADED!');
   init();
 });

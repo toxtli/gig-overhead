@@ -1,23 +1,12 @@
-var firebaseConfig = {
-	apiKey: "AIzaSyC00cL8EiHK-lCmyak2AS_dQdkFhiufhik",
-	authDomain: "mturk-research.firebaseapp.com",
-	databaseURL: "https://mturk-research.firebaseio.com",
-	projectId: "mturk-research",
-	storageBucket: "mturk-research.appspot.com",
-	messagingSenderId: "268474160818",
-	appId: "1:268474160818:web:6644d78d14e7dcf9"
-};
-
-firebase.initializeApp(firebaseConfig);
-
 function storeObject(obj) {
-	var db = firebase.firestore();
-	obj = JSON.parse(obj);
-	db.collection("records").add(obj)
-	.then(docRef => {
-	  console.log("Document written with ID: ", docRef.id);
-	})
-	.catch(error => {
-	  console.error("Error adding document: ", error);
-	});
+	var server = 'https://script.google.com/macros/s/AKfycbzTaan3V2v24Oo3Cz3jV1L679gQFXHjW4R0GWnP_PIb7jMnISTZ/exec?q=' + encodeURI(obj);
+	//console.log(server);
+	fetch(server)
+	  .then(function(response) {
+         //console.log('SEND TO SERVER');
+         return response.json();
+	   })
+	  .then(function(myJson) {
+	     //console.log(JSON.stringify(myJson));
+	   });
 }
