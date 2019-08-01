@@ -5,6 +5,7 @@ var libraries = [
 ];
 
 var configFile = 'platforms/index.json';
+var blakclistFile = 'platforms/blacklist.json';
 var platformsData = {};
 var platformCount = 0;
 
@@ -43,6 +44,25 @@ function loadLibraries(libraries, callback) {
 RegExp.escape = function(string) {
   return string.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&')
 };
+
+function isNotBlacklisted(localUrl) {
+  return new Promise((resolve, reject) => {
+    fetch(chrome.extension.getURL(blakclistFile)).then(r => r.json())
+      .then(urls => {
+        var found = false;
+        for (url of urls) {
+          if (localUrl.indexOf(url) != -1) {
+            found = true;
+            reject();
+            break;
+          }
+        }
+        if (!found) {
+          resolve();
+        }
+      })
+  });
+}
 
 function loadConfiguration(configFile) {
   return new Promise((resolve, reject) => {
@@ -96,41 +116,49 @@ function logSite(obj) {
 }
 
 function init() {
-  loadConfiguration(configFile).then(configData => {
-    //console.log('Loading complete');
-    var hostname = (new URL(globalUrl)).hostname;
-    //console.log(hostname);
-    var hostFound = false;
-    Object.keys(configData).forEach(key => {
-      if (key == hostname) {
-        hostFound = true;
-        //console.log('Hostname found');
-        var urlFound = false;
-        var lastSite = null;
-        for (var configObj of configData[key]) {
-          var regex = urlToRegex(configObj.url);
-          var matches = globalUrl.match(regex);
-          lastSite = configObj;
-          if (matches) {
-            var urlFound = true;
-            //console.log('URL matched');
-            logSite(configObj);
-            break;
+  isNotBlacklisted(globalUrl)
+    .then(() => {
+      //console.log('NOT BLACKLISTED');
+      loadConfiguration(configFile).then(configData => {
+        //console.log('Loading complete');
+        var hostname = (new URL(globalUrl)).hostname;
+        //console.log(hostname);
+        var hostFound = false;
+        Object.keys(configData).forEach(key => {
+          if (key == hostname) {
+            hostFound = true;
+            //console.log('Hostname found');
+            var urlFound = false;
+            var lastSite = null;
+            for (var configObj of configData[key]) {
+              var regex = urlToRegex(configObj.url);
+              var matches = globalUrl.match(regex);
+              lastSite = configObj;
+              if (matches) {
+                var urlFound = true;
+                //console.log('URL matched');
+                logSite(configObj);
+                break;
+              }
+            }
+            if (!urlFound) {
+              var obj = clone(lastSite);
+              obj.type = 'UNKNOWN';
+              obj.subtype = 'UNKNOWN';
+              logSite(obj);
+            }
           }
-        }
-        if (!urlFound) {
-          var obj = clone(lastSite);
-          obj.type = 'UNKNOWN';
-          obj.subtype = 'UNKNOWN';
+        });
+        if (!hostFound) {
+          var obj = clone(defaultSite);
           logSite(obj);
         }
-      }
+      });  
+    })
+    .catch(() => {
+      //console.log('BLACKLISTED');
+      //console.log(globalUrl);
     });
-    if (!hostFound) {
-      var obj = clone(defaultSite);
-      logSite(obj);
-    }
-  });
 }
 
 loadLibraries(libraries, ()=>{
