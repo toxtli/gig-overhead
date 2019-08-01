@@ -6,20 +6,9 @@ var libraries = [
   chrome.extension.getURL("js/inject.js")
 ];
 
-function loadLibraries(libraries) {
-  if (libraries.length > 0) {
-    var library = libraries.shift();
-    console.log(library);
-    var script = document.createElement('script');
-    script.src = library;
-    script.onload = function(){
-      loadLibraries(libraries);
-    } 
-    document.getElementsByTagName('head')[0].appendChild(script);
-  }
-}
-
-loadLibraries(libraries);
+var configFile = 'platforms/index.json';
+var platformsData = {};
+var platformCount = 0;
 
 var globalUrl = window.location.href;
 console.log(globalUrl);
@@ -30,6 +19,27 @@ var defaultSite = {
   "subtype": "OTHER",
   "platform": "OTHER",
   "time": null
+}
+
+function runCode(code) {
+    var script = document.createElement( "script" );
+    script.text = code;
+    document.head.appendChild( script ).parentNode.removeChild( script );
+}
+
+function loadLibraries(libraries, callback) {
+  if (libraries.length > 0) {
+    var library = libraries.shift();
+    console.log(library);
+    var script = document.createElement('script');
+    script.src = library;
+    script.onload = function(){
+      loadLibraries(libraries, callback);
+    } 
+    document.getElementsByTagName('head')[0].appendChild(script);
+  } else {
+    callback();
+  }
 }
 
 // var firebaseConfig = {
@@ -91,62 +101,67 @@ function logSite(obj) {
       obj.status = result['working_status'];
       obj.user = result['user_id'];
       console.log(obj);
+      runCode("storeObject('" + JSON.stringify(obj) + "')");
       //storeObject(obj).then(docRef => resolve(docRef)).catch(error => reject(error));
     });
   });
 }
 
-function storeObject(obj) {
-  return new Promise((resolve, reject) => {
-    console.log(obj);
-    var db = firebase.firestore();
-    db.collection("records").add(obj)
-    .then(docRef => {
-      console.log("Document written with ID: ", docRef.id);
-      resolve(docRef);
-    })
-    .catch(error => {
-      console.error("Error adding document: ", error);
-      reject(error);
-    })
+// function storeObject(obj) {
+//   return new Promise((resolve, reject) => {
+//     console.log(obj);
+//     var db = firebase.firestore();
+//     db.collection("records").add(obj)
+//     .then(docRef => {
+//       console.log("Document written with ID: ", docRef.id);
+//       resolve(docRef);
+//     })
+//     .catch(error => {
+//       console.error("Error adding document: ", error);
+//       reject(error);
+//     })
+//   });
+// }
+
+function init() {
+  loadConfiguration(configFile).then(configData => {
+    console.log('Loading complete');
+    var hostname = (new URL(globalUrl)).hostname;
+    console.log(hostname);
+    var hostFound = false;
+    Object.keys(configData).forEach(key => {
+      if (key == hostname) {
+        hostFound = true;
+        console.log('Hostname found');
+        var urlFound = false;
+        var lastSite = null;
+        for (var configObj of configData[key]) {
+          var regex = urlToRegex(configObj.url);
+          var matches = globalUrl.match(regex);
+          lastSite = configObj;
+          if (matches) {
+            var urlFound = true;
+            console.log('URL matched');
+            logSite(configObj);
+            break;
+          }
+        }
+        if (!urlFound) {
+          var obj = clone(lastSite);
+          obj.type = 'UNKNOWN';
+          obj.subtype = 'UNKNOWN';
+          logSite(obj);
+        }
+      }
+    });
+    if (!hostFound) {
+      var obj = clone(defaultSite);
+      logSite(obj);
+    }
   });
 }
 
-var configFile = 'platforms/index.json';
-var platformsData = {};
-var platformCount = 0;
-loadConfiguration(configFile).then(configData => {
-  console.log('Loading complete');
-  var hostname = (new URL(globalUrl)).hostname;
-  console.log(hostname);
-  var hostFound = false;
-  Object.keys(configData).forEach(key => {
-    if (key == hostname) {
-      hostFound = true;
-      console.log('Hostname found');
-      var urlFound = false;
-      var lastSite = null;
-      for (var configObj of configData[key]) {
-        var regex = urlToRegex(configObj.url);
-        var matches = globalUrl.match(regex);
-        lastSite = configObj;
-        if (matches) {
-          var urlFound = true;
-          console.log('URL matched');
-          logSite(configObj);
-          break;
-        }
-      }
-      if (!urlFound) {
-        var obj = clone(lastSite);
-        obj.type = 'UNKNOWN';
-        obj.subtype = 'UNKNOWN';
-        logSite(obj);
-      }
-    }
-  });
-  if (!hostFound) {
-    var obj = clone(defaultSite);
-    logSite(obj);
-  }
+loadLibraries(libraries, ()=>{
+  console.log('LOADED!');
+  init();
 });

@@ -1,5 +1,3 @@
-alert(window.location.href);
-
 var firebaseConfig = {
 	apiKey: "AIzaSyC00cL8EiHK-lCmyak2AS_dQdkFhiufhik",
 	authDomain: "mturk-research.firebaseapp.com",
@@ -11,14 +9,15 @@ var firebaseConfig = {
 };
 
 firebase.initializeApp(firebaseConfig);
-var db = firebase.firestore();
 
-db.collection("records").add({
-	"user": "Juan"
-})
-.then(docRef => {
-  console.log("Document written with ID: ", docRef.id);
-})
-.catch(error => {
-  console.error("Error adding document: ", error);
-})
+function storeObject(obj) {
+	var db = firebase.firestore();
+	obj = JSON.parse(obj);
+	db.collection("records").add(obj)
+	.then(docRef => {
+	  console.log("Document written with ID: ", docRef.id);
+	})
+	.catch(error => {
+	  console.error("Error adding document: ", error);
+	});
+}
