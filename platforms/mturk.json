@@ -79,6 +79,11 @@
 			"url": "https://worker.mturk.com/status_details/(.*)",
 			"type": "SEARCHING",				
 			"subtype": "TASK_STATUS"
+		},
+		{
+			"url": "https://www.mturk.com/worker/help(.*)",
+			"type": "LEARNING",				
+			"subtype": "PLATFORM_HELP"
 		}
 	]
 }

@@ -2,6 +2,11 @@
 	"name": "UPWORK",
 	"urls": [
 		{
+			"url": "https://www.upwork.com/ab/find-work/recommended",
+			"type": "SEARCHING",				
+			"subtype": "TASKS_LIST_RECOMMENDED"
+		},
+		{
 			"url": "https://www.upwork.com/ab/find-work/(.*)",
 			"type": "SEARCHING",				
 			"subtype": "TASKS_LIST"
