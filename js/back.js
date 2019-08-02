@@ -56,7 +56,6 @@ chrome.tabs.onSelectionChanged.addListener(function(tabId, tabObj) {
     chrome.pageAction.setIcon({path: "icon"+statusId+".png", tabId: lastTabId});
   });
   chrome.tabs.getSelected(null, function(tab) { 
-    console.log(tab.url);
     logURL(tab.url)
      .then(data => {
        data.push('TAB_CHANGE');
@@ -64,6 +63,18 @@ chrome.tabs.onSelectionChanged.addListener(function(tabId, tabObj) {
        storeObject(JSON.stringify(data));
      });
   });
+});
+
+chrome.tabs.onRemoved.addListener(function(tabId, info) {
+    chrome.tabs.getSelected(null, function(tab) {
+      console.log(tab);
+      logURL(tab.url)
+        .then(data => {
+           data.push('TAB_CLOSED');
+           console.log(data);
+           storeObject(JSON.stringify(data));
+        });
+    });
 });
 
 chrome.pageAction.onClicked.addListener(function(tab) {
