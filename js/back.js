@@ -39,6 +39,19 @@ function getRandomToken() {
     return hex;
 }
 
+function storeObject(obj) {
+  var server = 'https://script.google.com/macros/s/AKfycbzTaan3V2v24Oo3Cz3jV1L679gQFXHjW4R0GWnP_PIb7jMnISTZ/exec?q=' + encodeURIComponent(obj);
+  console.log(server);
+  fetch(server)
+    .then(function(response) {
+         //console.log('SEND TO SERVER');
+         return response.json();
+     })
+    .then(function(myJson) {
+       console.log(JSON.stringify(myJson));
+     });
+}
+
 chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
   console.log('LOADED');
   lastTabId = tabs[0].id;
@@ -48,12 +61,20 @@ chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
   });
 });
 
-chrome.tabs.onSelectionChanged.addListener(function(tabId) {
+chrome.tabs.onSelectionChanged.addListener(function(tabId, tabObj) {
   console.log('CHANGED');
   lastTabId = tabId;
   chrome.pageAction.show(lastTabId);
   getStatus((statusId)=>{
     chrome.pageAction.setIcon({path: "icon"+statusId+".png", tabId: lastTabId});
+  });
+  chrome.tabs.getSelected(null, function(tab) { 
+    console.log(tab.url);
+    logURL(tab.url)
+     .then(obj => {
+       console.log(obj);
+       storeObject(JSON.stringify(obj));
+     });
   });
 });
 

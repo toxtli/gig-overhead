@@ -19,6 +19,7 @@
             ],
             "all_frames": true,
             "js": [
+                "js/core.js",
                 "js/front.js"
             ]
         }
@@ -29,11 +30,12 @@
     ],
     "background": {
         "scripts": [
+            "js/core.js",
             "js/back.js"
         ],
         "persistent": true
     },
     "permissions": [
-        "webRequest", "webRequestBlocking", "tabs", "management","storage","<all_urls>"
+        "webRequest", "webRequestBlocking", "tabs", "management", "storage", "<all_urls>"
     ]
 }
