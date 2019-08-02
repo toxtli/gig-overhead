@@ -1,7 +1,7 @@
 //console.log('YEIII');
 
 var libraries = [
-  chrome.extension.getURL("js/inject.js")
+  chrome.extension.getURL("js/store.js")
 ];
 
 var globalUrl = window.location.href;
@@ -31,6 +31,7 @@ loadLibraries(libraries, ()=>{
   //console.log('LOADED!');
   logURL(globalUrl)
     .then(data => {
+      data.push('PAGE_LOAD');
       runCode("storeObject('" + JSON.stringify(data) + "')");
     });
 });

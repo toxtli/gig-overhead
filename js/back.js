@@ -39,19 +39,6 @@ function getRandomToken() {
     return hex;
 }
 
-function storeObject(obj) {
-  var server = 'https://script.google.com/macros/s/AKfycbzTaan3V2v24Oo3Cz3jV1L679gQFXHjW4R0GWnP_PIb7jMnISTZ/exec?q=' + encodeURIComponent(obj);
-  console.log(server);
-  fetch(server)
-    .then(function(response) {
-         //console.log('SEND TO SERVER');
-         return response.json();
-     })
-    .then(function(myJson) {
-       console.log(JSON.stringify(myJson));
-     });
-}
-
 chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
   console.log('LOADED');
   lastTabId = tabs[0].id;
@@ -71,9 +58,10 @@ chrome.tabs.onSelectionChanged.addListener(function(tabId, tabObj) {
   chrome.tabs.getSelected(null, function(tab) { 
     console.log(tab.url);
     logURL(tab.url)
-     .then(obj => {
-       console.log(obj);
-       storeObject(JSON.stringify(obj));
+     .then(data => {
+       data.push('TAB_CHANGE');
+       console.log(data);
+       storeObject(JSON.stringify(data));
      });
   });
 });
@@ -92,38 +80,3 @@ chrome.storage.local.get(['user_id'], (result) => {
     chrome.storage.local.set({'user_id': userId}, () => {});
   }
 });
-
-// var lastTabId = 0;
-// var tab_clicks = {};
-
-// chrome.tabs.onSelectionChanged.addListener(function(tabId) {
-//   lastTabId = tabId;
-//   chrome.pageAction.show(lastTabId);
-// });
-
-// chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
-//   lastTabId = tabs[0].id;
-//   chrome.pageAction.show(lastTabId);
-// });
-
-// // Called when the user clicks on the page action.
-// chrome.pageAction.onClicked.addListener(function(tab) {
-//   var clicks = tab_clicks[tab.id] || 0;
-//   chrome.pageAction.setIcon({path: "icon" + (clicks + 1) + ".png",
-//                              tabId: tab.id});
-//   if (clicks % 2) {
-//     chrome.pageAction.show(tab.id);
-//   } else {
-//     chrome.pageAction.hide(tab.id);
-//     setTimeout(function() { chrome.pageAction.show(tab.id); }, 200);
-//   }
-//   chrome.pageAction.setTitle({title: "click:" + clicks, tabId: tab.id});
-
-//   // We only have 2 icons, but cycle through 3 icons to test the
-//   // out-of-bounds index bug.
-//   clicks++;
-//   if (clicks > 3)
-//     clicks = 0;
-//   tab_clicks[tab.id] = clicks;
-// });
-
