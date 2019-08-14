@@ -35,3 +35,21 @@ loadLibraries(libraries, ()=>{
       runCode("storeObject('" + JSON.stringify(data) + "')");
     });
 });
+
+window.addEventListener('blur', () => {
+  logURL(globalUrl)
+    .then(data => {
+      data.push('PAGE_BLUR');
+      runCode("storeObject('" + JSON.stringify(data) + "')");
+      console.log('BLUR');
+    });
+});
+
+window.addEventListener('focus', () => {
+  logURL(globalUrl)
+    .then(data => {
+      data.push('PAGE_FOCUS');
+      runCode("storeObject('" + JSON.stringify(data) + "')");
+      console.log('FOCUS');
+    });
+});

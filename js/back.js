@@ -55,6 +55,7 @@ chrome.tabs.onSelectionChanged.addListener(function(tabId, tabObj) {
   getStatus((statusId)=>{
     chrome.pageAction.setIcon({path: "icon"+statusId+".png", tabId: lastTabId});
   });
+
   chrome.tabs.getSelected(null, function(tab) { 
     logURL(tab.url)
      .then(data => {
@@ -90,4 +91,14 @@ chrome.storage.local.get(['user_id'], (result) => {
     var userId = getRandomToken();
     chrome.storage.local.set({'user_id': userId}, () => {});
   }
+});
+
+chrome.windows.onFocusChanged.addListener(function(window) {
+    var inFocus = false;
+    if (window != chrome.windows.WINDOW_ID_NONE) {
+        inFocus = true;
+    }
+    console.log('FOCUS');
+    console.log(window);
+    console.log(inFocus);
 });
