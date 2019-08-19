@@ -27,29 +27,19 @@ function loadLibraries(libraries, callback) {
   }
 }
 
-loadLibraries(libraries, ()=>{
-  //console.log('LOADED!');
-  logURL(globalUrl)
+function logEvent(event) {
+  logURL(globalUrl, event)
     .then(data => {
-      data.push('PAGE_LOAD');
       runCode("storeObject('" + JSON.stringify(data) + "')");
     });
-});
+}
 
-window.addEventListener('blur', () => {
-  logURL(globalUrl)
-    .then(data => {
-      data.push('PAGE_BLUR');
-      runCode("storeObject('" + JSON.stringify(data) + "')");
-      console.log('BLUR');
-    });
-});
+loadLibraries(libraries, () => logEvent('PAGE_LOAD'));
 
-window.addEventListener('focus', () => {
-  logURL(globalUrl)
-    .then(data => {
-      data.push('PAGE_FOCUS');
-      runCode("storeObject('" + JSON.stringify(data) + "')");
-      console.log('FOCUS');
-    });
-});
+window.addEventListener('blur', () => logEvent('PAGE_BLUR'));
+
+window.addEventListener('focus', () => logEvent('PAGE_FOCUS'));
+
+window.addEventListener("beforeunload", () => logEvent('PAGE_BEFORE_CLOSE'));
+
+window.addEventListener("unload", () => logEvent('PAGE_CLOSE'));

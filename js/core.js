@@ -21,6 +21,7 @@ function isNotBlacklisted(localUrl) {
       .then(urls => {
         var found = false;
         for (url of urls) {
+          //console.log(localUrl);
           if (localUrl.indexOf(url) != -1) {
             found = true;
             reject();
@@ -40,11 +41,11 @@ function loadConfiguration(configFile) {
     var platformsData = {};
     fetch(chrome.extension.getURL(configFile)).then(r => r.json())
     .then(platforms => {
-      console.log(platforms);
+      //console.log(platforms);
       platforms.forEach(platform => {
         fetch(chrome.extension.getURL(platform)).then(r => r.json())
         .then(platformData => {
-          console.log(platformData);
+          //console.log(platformData);
           platformData.urls.forEach(urlObj => {
             var hostname = (new URL(urlObj.url)).hostname;
             if (!platformsData.hasOwnProperty(hostname)) {
@@ -89,21 +90,21 @@ function logSite(obj, globalUrl) {
   });
 }
 
-function logURL(globalUrl) {
+function logURL(globalUrl, event) {
   return new Promise((resolve, reject) => {
-    console.log('logURL');
+    //console.log('logURL');
     isNotBlacklisted(globalUrl)
       .then(() => {
-        console.log('NOT BLACKLISTED');
+        //console.log('NOT BLACKLISTED');
         loadConfiguration(configFile).then(configData => {
-          console.log('Loading complete');
+          //console.log('Loading complete');
           var hostname = (new URL(globalUrl)).hostname;
-          console.log(hostname);
+          //console.log(hostname);
           var hostFound = false;
           Object.keys(configData).forEach(key => {
             if (key == hostname) {
               hostFound = true;
-              console.log('Hostname found');
+              //console.log('Hostname found');
               var urlFound = false;
               var lastSite = null;
               for (var configObj of configData[key]) {
@@ -112,21 +113,24 @@ function logURL(globalUrl) {
                 lastSite = configObj;
                 if (matches) {
                   var urlFound = true;
-                  console.log('URL matched');
+                  //console.log('URL matched');
                   logSite(configObj, globalUrl).
                     then(data => {
+                      data.push(event);
+                      console.log(data)
                       resolve(data)
                     });
                   break;
                 }
               }
               if (!urlFound) {
-                console.log('!urlFound');
+                //console.log('!urlFound');
                 var obj = clone(lastSite);
                 obj.type = 'UNKNOWN';
                 obj.subtype = 'UNKNOWN';
                 logSite(obj, globalUrl).
                   then(data => {
+                    data.push(event);
                     resolve(data)
                   });
                 //logSite(obj, globalUrl);
@@ -134,18 +138,19 @@ function logURL(globalUrl) {
             }
           });
           if (!hostFound) {
-            console.log('!hostFound');
+            //console.log('!hostFound');
             var obj = clone(defaultSite);
             logSite(obj, globalUrl).
               then(data => {
-                resolve(data)
+                data.push(event);
+                resolve(data);
               });
             //logSite(obj, globalUrl);
           }
       });  
     })
     .catch(() => {
-      console.log('BLACKLISTED');
+      //console.log('BLACKLISTED');
       //console.log(globalUrl);
     });
   });

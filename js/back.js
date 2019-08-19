@@ -39,8 +39,16 @@ function getRandomToken() {
     return hex;
 }
 
+function logEvent(url, event) {
+  logURL(url, event)
+   .then(data => {
+     storeObject(JSON.stringify(data));
+   });
+}
+
+
 chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
-  console.log('LOADED');
+  //console.log('LOADED');
   lastTabId = tabs[0].id;
   chrome.pageAction.show(lastTabId);
   getStatus((statusId)=>{
@@ -48,38 +56,8 @@ chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
   });
 });
 
-chrome.tabs.onSelectionChanged.addListener(function(tabId, tabObj) {
-  console.log('CHANGED');
-  lastTabId = tabId;
-  chrome.pageAction.show(lastTabId);
-  getStatus((statusId)=>{
-    chrome.pageAction.setIcon({path: "icon"+statusId+".png", tabId: lastTabId});
-  });
-
-  chrome.tabs.getSelected(null, function(tab) { 
-    logURL(tab.url)
-     .then(data => {
-       data.push('TAB_CHANGE');
-       console.log(data);
-       storeObject(JSON.stringify(data));
-     });
-  });
-});
-
-chrome.tabs.onRemoved.addListener(function(tabId, info) {
-    chrome.tabs.getSelected(null, function(tab) {
-      console.log(tab);
-      logURL(tab.url)
-        .then(data => {
-           data.push('TAB_CLOSED');
-           console.log(data);
-           storeObject(JSON.stringify(data));
-        });
-    });
-});
-
 chrome.pageAction.onClicked.addListener(function(tab) {
-  console.log('CLICKED');
+  //console.log('CLICKED');
   lastTabId = tab.id;
   toogleStatus((statusId)=>{
     chrome.pageAction.setIcon({path: "icon"+statusId+".png", tabId: lastTabId});
@@ -93,12 +71,24 @@ chrome.storage.local.get(['user_id'], (result) => {
   }
 });
 
-chrome.windows.onFocusChanged.addListener(function(window) {
-    var inFocus = false;
-    if (window != chrome.windows.WINDOW_ID_NONE) {
-        inFocus = true;
-    }
-    console.log('FOCUS');
-    console.log(window);
-    console.log(inFocus);
+chrome.tabs.onSelectionChanged.addListener(function(tabId, tabObj) {
+  //console.log('CHANGED');
+  lastTabId = tabId;
+  chrome.pageAction.show(lastTabId);
+  getStatus((statusId)=>{
+    chrome.pageAction.setIcon({path: "icon"+statusId+".png", tabId: lastTabId});
+  });
+  chrome.tabs.getSelected(null, (tab) => logEvent(tab.url, 'TAB_CHANGE'));
+});
+
+chrome.tabs.onRemoved.addListener(function(tabId, info) {
+  chrome.tabs.getSelected(null, (tab) => logEvent(tab.url, 'TAB_CLOSED'));
+});
+
+chrome.windows.onFocusChanged.addListener((window) => {
+  chrome.windows.getCurrent({populate:true}, (windowObj) => {
+    for (var tab of windowObj.tabs)
+      if (tab.active)
+        logEvent(tab.url, windowObj.focused?'WINDOW_FOCUS':'WINDOW_BLUR');
+  });
 });
