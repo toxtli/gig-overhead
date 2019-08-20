@@ -75,77 +75,86 @@ function urlToRegex(url) {
   return new RegExp(url);
 }
 
-function logSite(obj, globalUrl) {
+function logSite(obj, globalUrl, event, extra) {
   return new Promise((resolve, reject) => {
     chrome.storage.local.get(['working_status','user_id'], (result) => {
+      var extra = null;
       obj.current = globalUrl;
       obj.time = (new Date()).getTime();
       obj.status = result['working_status'];
       obj.user = result['user_id'];
-      var data = [obj.time, obj.user, obj.platform, obj.type, obj.subtype, obj.status, obj.current];
-      resolve(data);
+      var data = [obj.time, obj.user, obj.platform, obj.type, obj.subtype, obj.status, obj.current, event, extra];
+      if (obj.hasOwnProperty('js')) {
+        extra = obj.js;
+      }
+      resolve({data:data,extra:extra});
       //runCode("storeObject('" + JSON.stringify(data) + "')");
       //storeObject(obj).then(docRef => resolve(docRef)).catch(error => reject(error));
     });
   });
 }
 
-function logURL(globalUrl, event) {
+function logURL(globalUrl, event, extra) {
   return new Promise((resolve, reject) => {
     //console.log('logURL');
     isNotBlacklisted(globalUrl)
       .then(() => {
         //console.log('NOT BLACKLISTED');
+        if(!extra) {
+          extra = "";
+        }
         loadConfiguration(configFile).then(configData => {
           //console.log('Loading complete');
           var hostname = (new URL(globalUrl)).hostname;
           //console.log(hostname);
           var hostFound = false;
-          Object.keys(configData).forEach(key => {
+          var urlsFound = [];
+          for (var key of Object.keys(configData)) {
             if (key == hostname) {
               hostFound = true;
               //console.log('Hostname found');
-              var urlFound = false;
               var lastSite = null;
               for (var configObj of configData[key]) {
                 var regex = urlToRegex(configObj.url);
                 var matches = globalUrl.match(regex);
                 lastSite = configObj;
                 if (matches) {
-                  var urlFound = true;
-                  //console.log('URL matched');
-                  logSite(configObj, globalUrl).
-                    then(data => {
-                      data.push(event);
-                      console.log(data)
-                      resolve(data)
-                    });
-                  break;
+                  urlsFound.push(configObj);
                 }
               }
-              if (!urlFound) {
-                //console.log('!urlFound');
-                var obj = clone(lastSite);
-                obj.type = 'UNKNOWN';
-                obj.subtype = 'UNKNOWN';
-                logSite(obj, globalUrl).
-                  then(data => {
-                    data.push(event);
-                    resolve(data)
-                  });
-                //logSite(obj, globalUrl);
-              }
             }
-          });
-          if (!hostFound) {
+          }
+          if (hostFound) {
+            console.log(urlsFound);
+            if (urlsFound.length > 0) {
+              var retrieved = 0;
+              var result = [];
+              for (var configObj of urlsFound) {
+                logSite(configObj, globalUrl, event, extra).
+                  then(data => {
+                    result.push(data);
+                    if (result.length == urlsFound.length) {
+                      resolve(result);
+                    }
+                  });
+              }
+            } else {
+              //console.log('!urlFound');
+              var obj = clone(lastSite);
+              obj.type = 'UNKNOWN';
+              obj.subtype = 'UNKNOWN';
+              logSite(obj, globalUrl, event, extra).
+                then(data => {
+                  resolve([data])
+                });
+            }
+          } else {
             //console.log('!hostFound');
             var obj = clone(defaultSite);
-            logSite(obj, globalUrl).
+            logSite(obj, globalUrl, event, extra).
               then(data => {
-                data.push(event);
-                resolve(data);
+                resolve([data]);
               });
-            //logSite(obj, globalUrl);
           }
       });  
     })

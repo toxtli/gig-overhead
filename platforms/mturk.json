@@ -17,22 +17,30 @@
 			"subtype": "TASKS_LIST_FILTER"
 		},
 		{
+			"url": "https://worker.mturk.com/projects/(.*)/tasks?ref=w_wp_skp_top",
+			"type": "WORKING",				
+			"subtype": "TASKS_SKIP"
+		},
+		{
 			"url": "https://worker.mturk.com/projects/(.*)/tasks?ref(.*)",
 			"type": "SEARCHING",				
 			"subtype": "TASKS_PREVIEW"
 		},
 		{
-			"url": "https://worker.mturk.com/projects/(.*)/tasks/(.*)?assignment_id=(.*)",
-			"type": "SEARCHING",				
-			"subtype": "TASKS_INFO",
-			"js": {
-				"selector": ""
-			}
-		},
-		{
 			"url": "https://worker.mturk.com/projects/(.*)/tasks/(.*)?assignment_id(.*)",
 			"type": "WORKING",				
 			"subtype": "TASKS_ACCEPTED"
+		},
+		{
+			"url": "https://worker.mturk.com/projects/(.*)/tasks(.*)",
+			"type": "SEARCHING",				
+			"subtype": "TASKS_INFO",
+			"js": {
+				"selector": ".modal-header",
+				"action": "equal",
+				"value": "HIT Details",
+				"wait": true
+			}
 		},
 		{
 			"url": "https://worker.mturk.com/projects?filters(.*)",
@@ -52,8 +60,16 @@
 			"type": "WORKING",				
 			"subtype": "TASK_SUBMITED",
 			"js": {
-				"selector": ""
+				"selector": ".mturk-alert-content > h3",
+				"action": "equal",
+				"value": "HIT Submitted",
+				"wait": false
 			}
+		},
+		{
+			"url": "https://worker.mturk.com/requesters/(.*)/projects",
+			"type": "SEARCHING",				
+			"subtype": "TASKS_PER_REQUESTER"
 		},
 		{
 			"url": "https://worker.mturk.com/earnings",

@@ -1,5 +1,6 @@
 var lastTabId = 0;
 var status = 0;
+var tabToUrl = {};
 
 function getStatus(callback) {
   chrome.storage.local.get(['working_status'], function (result) {
@@ -42,10 +43,20 @@ function getRandomToken() {
 function logEvent(url, event) {
   logURL(url, event)
    .then(data => {
-     storeObject(JSON.stringify(data));
+     for (record of data) {
+       if (record.extra == null) {
+         console.log(record.data);
+         storeObject(JSON.stringify(record.data));
+       }
+     }
    });
 }
 
+chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
+    // Note: this event is fired twice:
+    // Once with `changeInfo.status` = "loading" and another time with "complete"
+    tabToUrl[tabId] = tab.url;
+});
 
 chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
   //console.log('LOADED');
@@ -82,7 +93,8 @@ chrome.tabs.onSelectionChanged.addListener(function(tabId, tabObj) {
 });
 
 chrome.tabs.onRemoved.addListener(function(tabId, info) {
-  chrome.tabs.getSelected(null, (tab) => logEvent(tab.url, 'TAB_CLOSED'));
+  logEvent(tabToUrl[tabId], 'TAB_CLOSED');
+  delete tabToUrl[tabId];
 });
 
 chrome.windows.onFocusChanged.addListener((window) => {
