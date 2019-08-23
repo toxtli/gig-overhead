@@ -19,17 +19,19 @@
             ],
             "all_frames": true,
             "js": [
+                "js/triggers.js",
                 "js/core.js",
                 "js/front.js"
             ]
         }
     ],
     "web_accessible_resources": [
-        "platforms/*",
+        "config/*",
         "js/*"
     ],
     "background": {
         "scripts": [
+            "js/triggers.js",
             "js/core.js",
             "js/store.js",
             "js/back.js"
@@ -37,6 +39,6 @@
         "persistent": true
     },
     "permissions": [
-        "webRequest", "webRequestBlocking", "tabs", "management", "storage", "<all_urls>"
+        "tabs", "management", "storage", "<all_urls>"
     ]
 }

@@ -1,0 +1,28 @@
+{
+	"triggers": [{
+		"platform": "MTURK",
+		"method": "mturkEarnings",
+		"events": [
+			"MINUTES_60",
+			"TASK_SUBMITED"
+		]
+	},{
+		"platform": "FIVERR",
+		"method": "fiverrEarnings",
+		"events": [
+			"MINUTES_60"
+		]
+	},{
+		"platform": "UPWORK",
+		"method": "upworkEarnings",
+		"events": [
+			"MINUTES_60"
+		]
+	},{
+		"platform": "FREELANCER",
+		"method": "freelancerEarnings",
+		"events": [
+			"MINUTES_60"
+		]
+	}]
+}

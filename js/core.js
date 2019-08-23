@@ -1,7 +1,7 @@
 //console.log('YEIII');
 
-var configFile = 'platforms/index.json';
-var blakclistFile = 'platforms/blacklist.json';
+var configFile = 'config/index.json';
+var blakclistFile = 'config/blacklist.json';
 
 var defaultSite = {
   "url": "",

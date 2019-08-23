@@ -6,6 +6,10 @@ var libraries = [
 
 var globalUrl = window.location.href;
 
+function init_process() {
+  init_triggers('front');
+}
+
 function runCode(code) {
     var script = document.createElement( "script" );
     script.text = code;
@@ -25,6 +29,11 @@ function loadLibraries(libraries, callback) {
   } else {
     callback();
   }
+}
+
+function eventFired(data) {
+  storeObjectLocal(data);
+  matchATrigger(data[2], data[3]);
 }
 
 function storeObjectLocal(data) {
@@ -60,7 +69,7 @@ function executeValidation(settings, data) {
             if (element.innerText == settings.value) {            
               validated = true;
               console.log('EVENT');
-              storeObjectLocal(data);
+              eventFired(data);
               return true;
             }
           }
@@ -75,7 +84,7 @@ function executeValidation(settings, data) {
         var elements = target.querySelectorAll(settings.selector);
         if (elements.length > 0) {        
           validated = true;
-          storeObjectLocal(data);
+          eventFired(data);
           return true;
         }
       }
@@ -95,20 +104,21 @@ function executeValidation(settings, data) {
   }
 }
 
-var status = {}
+var stats = {}
 function logEvent(event, action) {
   var log = true;
   if (action) {
     if (action == 'OUT') {
-      for (var i in status) {
-        status[i] = false;
+      for (var i in stats) {
+        stats[i] = false;
       }
     } else if (action == 'ONCE') {
-      if (!status.hasOwnProperty(event)) {
-        status[event] = false;
+      console.log(stats);
+      if (!stats.hasOwnProperty(event)) {
+        stats[event] = false;
       }
-      if (!status[event]) {
-        status[event] = true;
+      if (!stats[event]) {
+        stats[event] = true;
       } else {
         log = false;
       }
@@ -121,7 +131,7 @@ function logEvent(event, action) {
         for (record of data) {
           if (record.extra == null) {
             console.log(record.data);
-            storeObjectLocal(record.data);
+            eventFired(record.data);
           } else {
             executeValidation(record.extra, record.data);
           }
@@ -143,3 +153,5 @@ window.addEventListener("unload", () => logEvent('PAGE_CLOSE'));
 window.addEventListener("keypress", () => logEvent('PAGE_KEY', 'ONCE'));
 
 window.addEventListener("click", () => logEvent('PAGE_CLICK', 'ONCE'));
+
+init_process();

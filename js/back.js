@@ -2,6 +2,10 @@ var lastTabId = 0;
 var status = 0;
 var tabToUrl = {};
 
+function init_process() {
+  init_triggers('back');
+}
+
 function getStatus(callback) {
   chrome.storage.local.get(['working_status'], function (result) {
     if (result.hasOwnProperty('working_status')) {
@@ -14,7 +18,7 @@ function getStatus(callback) {
 }
 
 function toogleStatus(callback) {
-  chrome.storage.local.get(['working_status'], (result)=>{
+  chrome.storage.local.setchrome.storage.local.get(['working_status'], (result)=>{
     if (result.hasOwnProperty('working_status')) {
       status = result['working_status'];
     }
@@ -40,22 +44,31 @@ function getRandomToken() {
     return hex;
 }
 
+function eventFired(data) {
+  var dataText = JSON.stringify(data);
+  storeObject(dataText);
+  matchATrigger(data[2], data[3]);
+}
+
 function logEvent(url, event) {
   logURL(url, event)
    .then(data => {
      for (record of data) {
        if (record.extra == null) {
          console.log(record.data);
-         storeObject(JSON.stringify(record.data));
+         eventFired(record.data);
        }
      }
    });
 }
 
 chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
-    // Note: this event is fired twice:
-    // Once with `changeInfo.status` = "loading" and another time with "complete"
-    tabToUrl[tabId] = tab.url;
+  // Note: this event is fired twice:
+  // Once with `changeInfo.status` = "loading" and another time with "complete"
+  tabToUrl[tabId] = tab.url;
+  getStatus((statusId)=>{
+    chrome.pageAction.setIcon({path: "icon"+statusId+".png", tabId: lastTabId});
+  });
 });
 
 chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
@@ -72,6 +85,7 @@ chrome.pageAction.onClicked.addListener(function(tab) {
   lastTabId = tab.id;
   toogleStatus((statusId)=>{
     chrome.pageAction.setIcon({path: "icon"+statusId+".png", tabId: lastTabId});
+    logEvent(tab.url, statusId==1?'SYSTEM_ENABLED':'SYSTEM_DISABLED');
   });
 });
 
@@ -104,3 +118,5 @@ chrome.windows.onFocusChanged.addListener((window) => {
         logEvent(tab.url, windowObj.focused?'WINDOW_FOCUS':'WINDOW_BLUR');
   });
 });
+
+init_process();
