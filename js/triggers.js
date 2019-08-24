@@ -19,7 +19,19 @@ function upworkEarnings() {
 	console.log('fiverrEarnings');	
 }
 
-function matchATrigger(platform, event) {
+function platformEnable(platform) {
+	getChromeLocal('enabled_platforms', {}).then(platforms => {
+		if (!platforms.hasOwnProperty(platform)) {
+			platforms[platform] = true;
+			chrome.storage.local.set({'enabled_platforms': platforms}, ()=>{});
+		}
+	});
+}
+
+function matchATrigger(data) {
+	var platform = data[2];
+	var event = data[4];
+	platformEnable(platform);
 	if (triggersMap.hasOwnProperty(platform) && triggersMap[platform].hasOwnProperty(event)) {
 		for (var func of triggersMap[platform][event]) {
 			eval(func)();
@@ -44,20 +56,24 @@ function getChromeLocal(varName, defaultValue) {
 }
 
 function loadCrons() {
+	console.log('CRON_INSTALATION');
 	for (var triggerType in triggersMap) {
-		if (triggerType.indexOf('MINUTES_')) {
+		if (triggerType.indexOf('MINUTES_') != -1) {
+			console.log(triggerType);
 			var minutes = parseInt(triggerType.split('_')[1]);
+			console.log(minutes);
 			intervals[triggerType] = setInterval(()=>{
-				getChromeLocal('enabled_platforms',[]).then(platforms => {
+				console.log('CRON_EXECUTED');
+				getChromeLocal('enabled_platforms',{}).then(platforms => {
 					for (var platform in triggersMap[triggerType]) {
-						if (platforms.indexOf(platform) != -1) {
-							for (var methodName of triggersMap[triggerType][platforms]) {
-								eval(methodName)();
+						if (platforms.hasOwnProperty(platform) && platforms[platform]) {
+							for (var methodName of triggersMap[triggerType][platform]) {
+								window[methodName]();
 							}
 						}
 					}
 				});
-			}, minutes*1000);
+			}, minutes*60*1000);
 		}
 	}
 }

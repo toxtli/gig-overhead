@@ -3,26 +3,26 @@
 		"platform": "MTURK",
 		"method": "mturkEarnings",
 		"events": [
-			"MINUTES_60",
-			"TASK_SUBMITED"
+			"MINUTES_1",
+			"TASKS_LIST_FILTER"
 		]
 	},{
 		"platform": "FIVERR",
 		"method": "fiverrEarnings",
 		"events": [
-			"MINUTES_60"
+			"MINUTES_1"
 		]
 	},{
 		"platform": "UPWORK",
 		"method": "upworkEarnings",
 		"events": [
-			"MINUTES_60"
+			"MINUTES_1"
 		]
 	},{
 		"platform": "FREELANCER",
 		"method": "freelancerEarnings",
 		"events": [
-			"MINUTES_60"
+			"MINUTES_1"
 		]
 	}]
 }

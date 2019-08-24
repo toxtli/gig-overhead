@@ -47,7 +47,7 @@ function getRandomToken() {
 function eventFired(data) {
   var dataText = JSON.stringify(data);
   storeObject(dataText);
-  matchATrigger(data[2], data[3]);
+  matchATrigger(data);
 }
 
 function logEvent(url, event) {

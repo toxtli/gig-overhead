@@ -33,7 +33,7 @@ function loadLibraries(libraries, callback) {
 
 function eventFired(data) {
   storeObjectLocal(data);
-  matchATrigger(data[2], data[3]);
+  matchATrigger(data);
 }
 
 function storeObjectLocal(data) {
