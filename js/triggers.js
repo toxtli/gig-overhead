@@ -30,11 +30,16 @@ function platformEnable(platform) {
 
 function matchATrigger(data) {
 	var platform = data[2];
-	var event = data[4];
+	var platformEvent = data[4];
+	var event = data[7];
 	platformEnable(platform);
-	if (triggersMap.hasOwnProperty(platform) && triggersMap[platform].hasOwnProperty(event)) {
-		for (var func of triggersMap[platform][event]) {
-			eval(func)();
+	console.log('matchATrigger');
+	if (triggersMap.hasOwnProperty(platformEvent) && triggersMap[platformEvent].hasOwnProperty(platform)) {
+		console.log(platformEvent, platform);
+		for (var func of triggersMap[platformEvent][platform]) {
+			if (event == func.value) {
+				window[func.method]();
+			}
 		}
 	}
 }
@@ -67,8 +72,8 @@ function loadCrons() {
 				getChromeLocal('enabled_platforms',{}).then(platforms => {
 					for (var platform in triggersMap[triggerType]) {
 						if (platforms.hasOwnProperty(platform) && platforms[platform]) {
-							for (var methodName of triggersMap[triggerType][platform]) {
-								window[methodName]();
+							for (var func of triggersMap[triggerType][platform]) {
+								window[func.method]();
 							}
 						}
 					}
@@ -81,11 +86,12 @@ function loadCrons() {
 function startTriggers(data, mode) {
 	for (var trigger of data.triggers) {
 		for (var event of trigger.events) {
-			if (!triggersMap.hasOwnProperty(event)) 
-				triggersMap[event] = {};
-			if (!triggersMap[event].hasOwnProperty(trigger.platform))
-				triggersMap[event][trigger.platform] = [];
-			triggersMap[event][trigger.platform].push(trigger.method);
+			if (!triggersMap.hasOwnProperty(event.type)) 
+				triggersMap[event.type] = {};
+			if (!triggersMap[event.type].hasOwnProperty(trigger.platform))
+				triggersMap[event.type][trigger.platform] = [];
+			var value = event.hasOwnProperty('value')?event.value:null;
+			triggersMap[event.type][trigger.platform].push({method: trigger.method, value: value});
 		}
 	}
 	if (mode == 'back') {

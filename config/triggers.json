@@ -3,26 +3,26 @@
 		"platform": "MTURK",
 		"method": "mturkEarnings",
 		"events": [
-			"MINUTES_1",
-			"TASKS_LIST_FILTER"
+			{"type": "MINUTES_1"},
+			{"type": "WORKER_QUALIFICATIONS_PENDING", "value": "PAGE_LOAD"}
 		]
 	},{
 		"platform": "FIVERR",
 		"method": "fiverrEarnings",
 		"events": [
-			"MINUTES_1"
+			{"type": "MINUTES_1"}
 		]
 	},{
 		"platform": "UPWORK",
 		"method": "upworkEarnings",
 		"events": [
-			"MINUTES_1"
+			{"type": "MINUTES_1"}
 		]
 	},{
 		"platform": "FREELANCER",
 		"method": "freelancerEarnings",
 		"events": [
-			"MINUTES_1"
+			{"type": "MINUTES_1"}
 		]
 	}]
 }
