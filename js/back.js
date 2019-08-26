@@ -111,6 +111,7 @@ chrome.tabs.onRemoved.addListener(function(tabId, info) {
   delete tabToUrl[tabId];
 });
 
+/*
 chrome.windows.onFocusChanged.addListener((window) => {
   chrome.windows.getCurrent({populate:true}, (windowObj) => {
     for (var tab of windowObj.tabs)
@@ -118,5 +119,6 @@ chrome.windows.onFocusChanged.addListener((window) => {
         logEvent(tab.url, windowObj.focused?'WINDOW_FOCUS':'WINDOW_BLUR');
   });
 });
+*/
 
 init_process();

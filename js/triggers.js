@@ -3,8 +3,15 @@ var triggersMap = {};
 var intervals = {};
 var triggerEvents = {};
 
-function mturkEarnings() {
-	console.log('mturkEarnings');
+function mturkEarningsLocal() {
+	console.log('mturkEarningsLocal');
+	console.log(document.querySelectorAll('.desktop-row.hidden-sm-down').forEach((el)=>{
+		console.log(el)}
+	));
+}
+
+function mturkEarningsRemote() {
+	console.log('mturkEarningsRemote');
 }
 
 function fiverrEarnings() {
@@ -33,9 +40,9 @@ function matchATrigger(data) {
 	var platformEvent = data[4];
 	var event = data[7];
 	platformEnable(platform);
-	console.log('matchATrigger');
+	//console.log('matchATrigger');
 	if (triggersMap.hasOwnProperty(platformEvent) && triggersMap[platformEvent].hasOwnProperty(platform)) {
-		console.log(platformEvent, platform);
+		//console.log(platformEvent, platform);
 		for (var func of triggersMap[platformEvent][platform]) {
 			if (event == func.value) {
 				window[func.method]();
@@ -61,24 +68,25 @@ function getChromeLocal(varName, defaultValue) {
 }
 
 function loadCrons() {
-	console.log('CRON_INSTALATION');
+	//#console.log('CRON_INSTALATION');
 	for (var triggerType in triggersMap) {
 		if (triggerType.indexOf('MINUTES_') != -1) {
+			var triggerBase = triggersMap[triggerType];
 			console.log(triggerType);
 			var minutes = parseInt(triggerType.split('_')[1]);
 			console.log(minutes);
 			intervals[triggerType] = setInterval(()=>{
-				console.log('CRON_EXECUTED');
+				//console.log('CRON_EXECUTED');
 				getChromeLocal('enabled_platforms',{}).then(platforms => {
-					for (var platform in triggersMap[triggerType]) {
+					for (var platform in triggerBase) {
 						if (platforms.hasOwnProperty(platform) && platforms[platform]) {
-							for (var func of triggersMap[triggerType][platform]) {
+							for (var func of triggerBase[platform]) {
 								window[func.method]();
 							}
 						}
 					}
 				});
-			}, minutes*60*1000);
+			}, minutes*60*100);
 		}
 	}
 }

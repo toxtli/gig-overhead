@@ -15,11 +15,26 @@ RegExp.escape = function(string) {
   return string.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&')
 };
 
+var fileContent = {};
+function getFileContentOnce(filePath) {
+  return new Promise((resolve, reject) => {
+    if (!fileContent.hasOwnProperty(filePath)) {
+      fetch(chrome.extension.getURL(filePath)).then(r => r.json())
+        .then(content => {
+          fileContent[filePath] = content;
+          resolve(fileContent[filePath]);
+        })
+    } else {
+      resolve(fileContent[filePath]);
+    }
+  });
+}
+
 function isNotBlacklisted(localUrl) {
   return new Promise((resolve, reject) => {
-    fetch(chrome.extension.getURL(blakclistFile)).then(r => r.json())
+    getFileContentOnce(blakclistFile)
       .then(urls => {
-        var found = false;
+        found = false;
         for (url of urls) {
           //console.log(localUrl);
           if (localUrl.indexOf(url) != -1) {
@@ -39,11 +54,11 @@ function loadConfiguration(configFile) {
   return new Promise((resolve, reject) => {
     var platformCount = 0;
     var platformsData = {};
-    fetch(chrome.extension.getURL(configFile)).then(r => r.json())
+    getFileContentOnce(configFile)
     .then(platforms => {
       //console.log(platforms);
       platforms.forEach(platform => {
-        fetch(chrome.extension.getURL(platform)).then(r => r.json())
+        getFileContentOnce(platform)
         .then(platformData => {
           //console.log(platformData);
           platformData.urls.forEach(urlObj => {

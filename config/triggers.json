@@ -1,10 +1,15 @@
 {
 	"triggers": [{
 		"platform": "MTURK",
-		"method": "mturkEarnings",
+		"method": "mturkEarningsRemote",
 		"events": [
-			{"type": "MINUTES_1"},
-			{"type": "WORKER_QUALIFICATIONS_PENDING", "value": "PAGE_LOAD"}
+			{"type": "MINUTES_1"}
+		]
+	},{
+		"platform": "MTURK",
+		"method": "mturkEarningsLocal",
+		"events": [
+			{"type": "WORKER_DASHBOARD", "value": "PAGE_LOAD"}
 		]
 	},{
 		"platform": "FIVERR",

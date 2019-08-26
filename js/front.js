@@ -113,7 +113,7 @@ function logEvent(event, action) {
         stats[i] = false;
       }
     } else if (action == 'ONCE') {
-      console.log(stats);
+      //console.log(stats);
       if (!stats.hasOwnProperty(event)) {
         stats[event] = false;
       }
@@ -146,9 +146,9 @@ window.addEventListener('blur', () => logEvent('PAGE_BLUR', 'OUT'));
 
 window.addEventListener('focus', () => logEvent('PAGE_FOCUS'));
 
-window.addEventListener("beforeunload", () => logEvent('PAGE_BEFORE_CLOSE'));
+//window.addEventListener("beforeunload", () => logEvent('PAGE_BEFORE_CLOSE'));
 
-window.addEventListener("unload", () => logEvent('PAGE_CLOSE'));
+//window.addEventListener("unload", () => logEvent('PAGE_CLOSE'));
 
 window.addEventListener("keypress", () => logEvent('PAGE_KEY', 'ONCE'));
 
