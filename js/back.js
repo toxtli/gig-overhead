@@ -4,6 +4,7 @@ var tabToUrl = {};
 
 function init_process() {
   init_triggers('back');
+  fsmReset();
 }
 
 function getStatus(callback) {

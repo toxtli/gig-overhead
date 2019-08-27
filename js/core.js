@@ -35,8 +35,8 @@ function setChromeLocal(varName, value) {
   return new Promise((resolve, reject) => {
     var record = {};
     record[varName] = value;
-    chrome.storage.local.set(value, ()=>{
-      resolve(defaultValue);
+    chrome.storage.local.set(record, ()=>{
+      resolve(record);
     });
   });
 }

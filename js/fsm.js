@@ -14,48 +14,69 @@ var states = {
 }
 
 function fsmInput(obj) {
+	console.log('fsmInput');
 	processState('overheads', obj);
 	processState('working', obj);
 }
 
 function processState(state, obj) {
-	getChromeLocal(state, {}).then(queue => {
-		if (states[state].init.indexOf(obj[states[state].param]) != -1) {
-			setElementToQueue(state, queue, obj, updatedQueue => {
-				setChromeLocal(state, updatedQueue);
-			});			
-		} else if (states[state].init.indexOf(obj[states[state].param]) != -1) {
-			getElementToQueue(state, queue, obj, (lastObj, updatedQueue) => {
-				if (retrieved != null) {
+	//return new Promise((resolve, reject) => {
+		getChromeLocal(state, {}).then(queue => {
+			console.log(clone(queue));
+			if (states[state].init.indexOf(obj[states[state].param]) != -1) {
+				console.log('INIT');
+				setElementToQueue(state, queue, obj, updatedQueue => {
+					console.log(clone(updatedQueue));
 					setChromeLocal(state, updatedQueue);
-					saveLapse(state, lastObj, obj);
-				}
-			});	
-		}
-	});
+					//reject();
+				});			
+			} else if (states[state].end.indexOf(obj[states[state].param]) != -1) {
+				console.log('END');
+				getElementToQueue(state, queue, obj, (lastObj, updatedQueue) => {
+					console.log(clone(updatedQueue));
+					if (lastObj != null) {
+						console.log('lastObj');
+						console.log(lastObj);
+						setChromeLocal(state, updatedQueue);
+						saveLapse(state, lastObj, obj);
+						//resolve(lastObj);
+					}
+				});	
+			} else {
+				//reject();
+			}
+		});
+	//});
 }
 
-function setElementToQueue(state, queue, obj, callback, traverse) {
+function setElementToQueue(state, queue, obj, callback, traverse, objToAdd) {
 	if (traverse == null) {
 		traverse = {
-			items: states[state].group,
+			items: clone(states[state].group),
 			trav: queue
 		};
-		return setElementToQueue(state, queue, obj, callback, traverse);
+		return setElementToQueue(state, queue, obj, callback, traverse, objToAdd);
 	} else if (traverse.items.length > 0) {
 		var index = traverse.items.shift();
+		if (obj.hasOwnProperty(index))
+			index = obj[index];
 		if (!traverse.trav.hasOwnProperty(index)) {
 			if (traverse.items.length > 0) {
 				traverse.trav[index] = {};
 				traverse.trav = traverse.trav[index];
-				return setElementToQueue(state, queue, obj, callback, traverse);
+				return setElementToQueue(state, queue, obj, callback, traverse, objToAdd);
 			} else {
-				traverse.trav[index] = [];
+				traverse.trav[index] = [objToAdd==null?obj:objToAdd];
 				callback(queue);
 			}
 		} else {
-			traverse.trav = traverse.trav[index];
-			return setElementToQueue(state, queue, obj, callback, traverse);
+			if (traverse.items.length > 0) {
+				traverse.trav = traverse.trav[index];
+				return setElementToQueue(state, queue, obj, callback, traverse, objToAdd);				
+			} else {
+				traverse.trav[index].push(objToAdd==null?obj:objToAdd);
+				callback(queue);
+			}
 		}
 	}
 }
@@ -63,18 +84,20 @@ function setElementToQueue(state, queue, obj, callback, traverse) {
 function getElementToQueue(state, queue, obj, callback, traverse) {
 	if (traverse == null) {
 		traverse = {
-			items: states[state].group,
+			items: clone(states[state].group),
 			trav: queue
 		};
-		return setElementToQueue(state, queue, obj, callback, traverse);
+		return getElementToQueue(state, queue, obj, callback, traverse);
 	} else if (traverse.items.length > 0) {
 		var index = traverse.items.shift();
+		if (obj.hasOwnProperty(index))
+			index = obj[index];
 		if (!traverse.trav.hasOwnProperty(index)) {
 			callback(null,queue)
 		} else {
 			if (traverse.items.length > 0) {
 				traverse.trav = traverse.trav[index];
-				return setElementToQueue(state, queue, obj, callback, traverse);
+				return getElementToQueue(state, queue, obj, callback, traverse);
 			} else {
 				if (traverse.trav[index].length > 0) {
 					var lastObj = traverse.trav[index].shift();
@@ -87,19 +110,27 @@ function getElementToQueue(state, queue, obj, callback, traverse) {
 	}
 }
 
+function fsmReset() {
+	chrome.storage.local.set({lapses:{}, overheads:{}, working:{}}, ()=>{});
+}
+
 function saveLapse(state, lastObj, obj) {
 	getChromeLocal('lapses', {}).then(lapses => {
+		console.log('saveLapse');
+		console.log(clone(lapses));
 		var lapse = ({
 			"init": lastObj.time,
 			"end": obj.time,
-			"diff": timeLapse
+			"diff": (obj.time - lastObj.time)
 		});
 		var traverse = {
 			"items": [state, "platform", "activity", "activityType"],
 			"trav": lapses
 		};
-		setElementToQueue(state, lapses, lapse, (lapsesUpdated) => {
+		console.log(clone(traverse));
+		setElementToQueue(state, lapses, obj, (lapsesUpdated) => {
+			console.log(clone(lapsesUpdated));
 			setChromeLocal('lapses', lapsesUpdated);
-		}, traverse);
+		}, traverse, lapse);
 	});
 }

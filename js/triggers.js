@@ -5,9 +5,9 @@ var triggerEvents = {};
 
 function mturkEarningsLocal() {
 	console.log('mturkEarningsLocal');
-	console.log(document.querySelectorAll('.desktop-row.hidden-sm-down').forEach((el)=>{
-		console.log(el)}
-	));
+	document.querySelectorAll('.desktop-row.hidden-sm-down').forEach((el)=>{
+		//console.log(el)}
+	});
 }
 
 function mturkEarningsRemote() {
