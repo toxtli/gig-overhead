@@ -19,6 +19,7 @@
             ],
             "all_frames": true,
             "js": [
+                "js/fsm.js",
                 "js/triggers.js",
                 "js/core.js",
                 "js/front.js"
@@ -31,6 +32,7 @@
     ],
     "background": {
         "scripts": [
+            "js/fsm.js",
             "js/triggers.js",
             "js/core.js",
             "js/store.js",

@@ -45,9 +45,10 @@ function getRandomToken() {
 }
 
 function eventFired(data) {
-  var dataText = JSON.stringify(data);
-  storeObject(dataText);
-  matchATrigger(data);
+  storeObject(JSON.stringify(data));
+  var obj = mapObject(data);
+  fsmInput(obj);
+  matchATrigger(obj);
 }
 
 function logEvent(url, event) {

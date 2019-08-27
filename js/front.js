@@ -33,7 +33,9 @@ function loadLibraries(libraries, callback) {
 
 function eventFired(data) {
   storeObjectLocal(data);
-  matchATrigger(data);
+  var obj = mapObject(data);
+  fsmInput(obj);
+  matchATrigger(obj);
 }
 
 function storeObjectLocal(data) {
@@ -146,7 +148,7 @@ window.addEventListener('blur', () => logEvent('PAGE_BLUR', 'OUT'));
 
 window.addEventListener('focus', () => logEvent('PAGE_FOCUS'));
 
-//window.addEventListener("beforeunload", () => logEvent('PAGE_BEFORE_CLOSE'));
+window.addEventListener("beforeunload", () => logEvent('PAGE_BEFORE_CLOSE'));
 
 //window.addEventListener("unload", () => logEvent('PAGE_CLOSE'));
 

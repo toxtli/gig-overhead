@@ -28,6 +28,7 @@ function upworkEarnings() {
 
 function platformEnable(platform) {
 	getChromeLocal('enabled_platforms', {}).then(platforms => {
+		('https://worker.mturk.com/status_details/2019-08-26')
 		if (!platforms.hasOwnProperty(platform)) {
 			platforms[platform] = true;
 			chrome.storage.local.set({'enabled_platforms': platforms}, ()=>{});
@@ -36,15 +37,10 @@ function platformEnable(platform) {
 }
 
 function matchATrigger(data) {
-	var platform = data[2];
-	var platformEvent = data[4];
-	var event = data[7];
-	platformEnable(platform);
-	//console.log('matchATrigger');
-	if (triggersMap.hasOwnProperty(platformEvent) && triggersMap[platformEvent].hasOwnProperty(platform)) {
-		//console.log(platformEvent, platform);
-		for (var func of triggersMap[platformEvent][platform]) {
-			if (event == func.value) {
+	platformEnable(data.platform);
+	if (triggersMap.hasOwnProperty(data.activityType) && triggersMap[data.activityType].hasOwnProperty(data.platform)) {
+		for (var func of triggersMap[data.activityType][data.platform]) {
+			if (data.event == func.value) {
 				window[func.method]();
 			}
 		}

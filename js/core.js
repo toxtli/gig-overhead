@@ -1,6 +1,6 @@
 //console.log('YEIII');
 
-var configFile = 'config/index.json';
+var platformsFile = 'config/platforms.json';
 var blakclistFile = 'config/blacklist.json';
 
 var defaultSite = {
@@ -50,16 +50,14 @@ function isNotBlacklisted(localUrl) {
   });
 }
 
-function loadConfiguration(configFile) {
+function loadConfiguration(platformsFile) {
   return new Promise((resolve, reject) => {
     var platformCount = 0;
     var platformsData = {};
-    getFileContentOnce(configFile)
+    getFileContentOnce(platformsFile)
     .then(platforms => {
       //console.log(platforms);
-      platforms.forEach(platform => {
-        getFileContentOnce(platform)
-        .then(platformData => {
+      platforms.forEach(platformData => {
           //console.log(platformData);
           platformData.urls.forEach(urlObj => {
             var hostname = (new URL(urlObj.url)).hostname;
@@ -73,10 +71,23 @@ function loadConfiguration(configFile) {
           if (platformCount == platforms.length) {
             resolve(platformsData);
           }
-        });
       });
     });
   });
+}
+
+function mapObject(data) {
+  var obj = {};
+  obj.time = data[0];
+  obj.user = data[1];
+  obj.platform = data[2];
+  obj.activity = data[3];
+  obj.activityType = data[4];
+  obj.status = data[5];
+  obj.url = data[6];
+  obj.event = data[7];
+  obj.extra = data[8];
+  return obj;
 }
 
 function clone(obj) {
@@ -118,7 +129,7 @@ function logURL(globalUrl, event, extra) {
         if(!extra) {
           extra = "";
         }
-        loadConfiguration(configFile).then(configData => {
+        loadConfiguration(platformsFile).then(configData => {
           //console.log('Loading complete');
           var hostname = (new URL(globalUrl)).hostname;
           //console.log(hostname);
