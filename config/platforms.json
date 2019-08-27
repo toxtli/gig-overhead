@@ -20,22 +20,22 @@
 			{
 				"url": "https://worker.mturk.com/projects/(.*)/tasks?ref=w_wp_skp_top",
 				"type": "WORKING",				
-				"subtype": "TASKS_SKIP"
+				"subtype": "TASK_SKIP"
 			},
 			{
 				"url": "https://worker.mturk.com/projects/(.*)/tasks?ref(.*)",
 				"type": "SEARCHING",				
-				"subtype": "TASKS_PREVIEW"
+				"subtype": "TASK_PREVIEW"
 			},
 			{
 				"url": "https://worker.mturk.com/projects/(.*)/tasks/(.*)?assignment_id(.*)",
 				"type": "WORKING",				
-				"subtype": "TASKS_ACCEPTED"
+				"subtype": "TASK_STARTED"
 			},
 			{
 				"url": "https://worker.mturk.com/projects/(.*)/tasks(.*)",
 				"type": "SEARCHING",				
-				"subtype": "TASKS_INFO",
+				"subtype": "TASK_INFO",
 				"js": {
 					"selector": ".modal-header",
 					"action": "equal",
@@ -46,7 +46,7 @@
 			{
 				"url": "https://worker.mturk.com/projects?filters(.*)",
 				"type": "SEARCHING",				
-				"subtype": "TASKS_REJECTED",
+				"subtype": "TASK_REJECTED",
 				"js": {
 					"selector": ""
 				}

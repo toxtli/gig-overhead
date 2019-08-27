@@ -47,22 +47,6 @@ function matchATrigger(data) {
 	}
 }
 
-function getChromeLocal(varName, defaultValue) {
-	return new Promise((resolve, reject) => {
-		chrome.storage.local.get([varName], (result)=>{
-			if (result.hasOwnProperty(varName)) {
-				resolve(result[varName]);
-			} else {
-				var value = {};
-				value[varName] = defaultValue;
-				chrome.storage.local.set(value, ()=>{
-					resolve(defaultValue);
-				});
-			}
-		});
-	});
-}
-
 function loadCrons() {
 	//#console.log('CRON_INSTALATION');
 	for (var triggerType in triggersMap) {

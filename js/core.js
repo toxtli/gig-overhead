@@ -15,6 +15,32 @@ RegExp.escape = function(string) {
   return string.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&')
 };
 
+function getChromeLocal(varName, defaultValue) {
+  return new Promise((resolve, reject) => {
+    chrome.storage.local.get([varName], (result)=>{
+      if (result.hasOwnProperty(varName)) {
+        resolve(result[varName]);
+      } else {
+        var value = {};
+        value[varName] = defaultValue;
+        chrome.storage.local.set(value, ()=>{
+          resolve(defaultValue);
+        });
+      }
+    });
+  });
+}
+
+function setChromeLocal(varName, value) {
+  return new Promise((resolve, reject) => {
+    var record = {};
+    record[varName] = value;
+    chrome.storage.local.set(value, ()=>{
+      resolve(defaultValue);
+    });
+  });
+}
+
 var fileContent = {};
 function getFileContentOnce(filePath) {
   return new Promise((resolve, reject) => {
