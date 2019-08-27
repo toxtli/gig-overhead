@@ -30,6 +30,12 @@ function getFileContentOnce(filePath) {
   });
 }
 
+function trackEvent(data) {
+  var obj = mapObject(data);
+  fsmInput(obj);
+  matchATrigger(obj);
+}
+
 function isNotBlacklisted(localUrl) {
   return new Promise((resolve, reject) => {
     getFileContentOnce(blakclistFile)
