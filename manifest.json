@@ -41,6 +41,7 @@
         "persistent": true
     },
     "permissions": [
-        "tabs", "management", "storage", "<all_urls>"
-    ]
+        "tabs", "management", "storage", "<all_urls>", "contextMenus"
+    ],
+    "options_page": "dashboard.html"
 }
