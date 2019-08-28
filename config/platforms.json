@@ -8,6 +8,11 @@
 				"subtype": "TASKS_LIST"
 			},
 			{
+				"url": "https://worker.mturk.com/projects",
+				"type": "SEARCHING",				
+				"subtype": "TASKS_LIST"
+			},
+			{
 				"url": "https://worker.mturk.com/dashboard(.*)",
 				"type": "PROFILE",				
 				"subtype": "WORKER_DASHBOARD"
@@ -68,7 +73,7 @@
 				}
 			},
 			{
-				"url": "https://worker.mturk.com/requesters/(.*)/projects",
+				"url": "https://worker.mturk.com/requesters/(.*)/project(.*)",
 				"type": "SEARCHING",				
 				"subtype": "TASKS_PER_REQUESTER"
 			},
