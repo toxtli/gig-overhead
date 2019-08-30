@@ -80,7 +80,7 @@ function executeValidation(settings, data) {
   } else {
     func = function(e){
       var target = conditionExecution(e);
-      if (target != null) {
+      if (target != null && settings.selector) {
         var elements = target.querySelectorAll(settings.selector);
         if (elements.length > 0) {        
           validated = true;

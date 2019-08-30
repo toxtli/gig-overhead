@@ -53,7 +53,10 @@
 				"type": "SEARCHING",				
 				"subtype": "TASK_REJECTED",
 				"js": {
-					"selector": ""
+					"selector": ".mturk-alert-content > h3",
+					"action": "equal",
+					"value": "There are no more of these HITs available",
+					"wait": false
 				}
 			},
 			{
@@ -63,6 +66,17 @@
 			},
 			{
 				"url": "https://worker.mturk.com/requesters/(.*)/projects",
+				"type": "WORKING",				
+				"subtype": "TASK_SUBMITED",
+				"js": {
+					"selector": ".mturk-alert-content > h3",
+					"action": "equal",
+					"value": "HIT Submitted",
+					"wait": false
+				}
+			},
+			{
+				"url": "https://worker.mturk.com/projects/(.*)/tasks?from_submit=true",
 				"type": "WORKING",				
 				"subtype": "TASK_SUBMITED",
 				"js": {

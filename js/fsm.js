@@ -1,15 +1,16 @@
 var states = {
 	"overheads": {
 		"group": ["platform", "activityType"],
-		"param": "event",
-		"init": ["PAGE_LOAD", "PAGE_FOCUS"],
-		"end": ["PAGE_CLOSE", "PAGE_BLUR"]
+		"filter": {"activity": ["WORKING", "UNKNOWN"]},
+		"init": {"event": ["PAGE_LOAD", "PAGE_FOCUS"]},
+		"end": {"event": ["PAGE_CLOSE", "PAGE_BLUR"]}
 	},
 	"working": {
 		"group": ["platform"],
-		"param": "activityType",
-		"init": ["TASK_STARTED"],
-		"end": ["TASK_SUBMITED", "TASK_REJECTED"]
+		"init": {"activityType": ["TASK_STARTED"], "event": ["PAGE_LOAD"]},
+		"end": {"activityType": ["TASK_SUBMITED"], "event": ["PAGE_LOAD"]}
+		//"init": {"activityType": ["WORKER_QUALIFICATIONS"], "event": ["PAGE_LOAD"]},
+		//"end": {"activityType": ["WORKER_QUALIFICATIONS_PENDING"], "event": ["PAGE_LOAD"]}
 	}
 }
 
@@ -19,24 +20,45 @@ function fsmInput(obj) {
 	processState('working', obj);
 }
 
+function evaluateState(stage, state, obj) {
+	var result = false;
+	var count = 0;
+	var params = Object.keys(states[state][stage]);
+	if (states[state].hasOwnProperty("filter")) {
+		for (var filter in states[state].filter) {
+			if (states[state].filter[filter].indexOf(obj[filter]) != -1) {
+				return false;
+			}
+		}
+	}
+	for (var param of params) {
+		if (states[state][stage][param].indexOf(obj[param]) != -1) {
+			count++;
+		}
+	}
+	return (count == params.length);
+}
+
 function processState(state, obj) {
+	console.log('processState');
+	console.log(obj[states[state].param]);
 	//return new Promise((resolve, reject) => {
 		getChromeLocal(state, {}).then(queue => {
-			console.log(clone(queue));
-			if (states[state].init.indexOf(obj[states[state].param]) != -1) {
+			//console.log(clone(queue));
+			if (evaluateState('init', state, obj)) {
 				console.log('INIT');
 				setElementToQueue(state, queue, obj, updatedQueue => {
-					console.log(clone(updatedQueue));
+					//console.log(clone(updatedQueue));
 					setChromeLocal(state, updatedQueue);
 					//reject();
 				});			
-			} else if (states[state].end.indexOf(obj[states[state].param]) != -1) {
+			} else if (evaluateState('end', state, obj)) {
 				console.log('END');
 				getElementToQueue(state, queue, obj, (lastObj, updatedQueue) => {
-					console.log(clone(updatedQueue));
+					//console.log(clone(updatedQueue));
 					if (lastObj != null) {
-						console.log('lastObj');
-						console.log(lastObj);
+						//console.log('lastObj');
+						//console.log(lastObj);
 						setChromeLocal(state, updatedQueue);
 						saveLapse(state, lastObj, obj);
 						//resolve(lastObj);
@@ -117,7 +139,7 @@ function fsmReset() {
 function saveLapse(state, lastObj, obj) {
 	getChromeLocal('lapses', {}).then(lapses => {
 		console.log('saveLapse');
-		console.log(clone(lapses));
+		//console.log(clone(lapses));
 		var lapse = ({
 			"init": lastObj.time,
 			"end": obj.time,
