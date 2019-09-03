@@ -222,3 +222,18 @@ function logURL(globalUrl, event, extra) {
     });
   });
 }
+
+function getDOMNode(urlRemote) {
+  return new Promise((resolve, reject) => {
+    if (urlRemote == null) {
+      resolve(document);
+    } else {
+      fetch(urlRemote).then((response) => response.text()).then(function(text) {
+          var node = document.createElement("div");
+          //node.setAttribute("id", "tempContent");
+          node.innerHTML = text;
+          resolve(node);
+        });
+      }
+  });
+}

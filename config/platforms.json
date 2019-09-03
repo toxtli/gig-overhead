@@ -113,8 +113,8 @@
 			},
 			{
 				"url": "https://worker.mturk.com/status_details/(.*)",
-				"type": "SEARCHING",				
-				"subtype": "TASK_STATUS"
+				"type": "PROFILE",				
+				"subtype": "WORKER_EARNINGS_DETAILS"
 			},
 			{
 				"url": "https://www.mturk.com/worker/help(.*)",

@@ -5,6 +5,7 @@ var tabToUrl = {};
 function init_process() {
   init_triggers('back');
   fsmReset();
+  //getWage(true).then(totals => console.log(totals));
 }
 
 function getStatus(callback) {

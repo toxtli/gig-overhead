@@ -3,31 +3,31 @@
 		"platform": "MTURK",
 		"method": "mturkEarningsRemote",
 		"events": [
-			{"type": "MINUTES_1"}
+			{"type": "MINUTES_60"}
 		]
 	},{
 		"platform": "MTURK",
 		"method": "mturkEarningsLocal",
 		"events": [
-			{"type": "WORKER_DASHBOARD", "value": "PAGE_LOAD"}
+			{"type": "WORKER_EARNINGS_DETAILS", "value": "PAGE_LOAD"}
 		]
 	},{
 		"platform": "FIVERR",
 		"method": "fiverrEarnings",
 		"events": [
-			{"type": "MINUTES_1"}
+			{"type": "MINUTES_60"}
 		]
 	},{
 		"platform": "UPWORK",
 		"method": "upworkEarnings",
 		"events": [
-			{"type": "MINUTES_1"}
+			{"type": "MINUTES_60"}
 		]
 	},{
 		"platform": "FREELANCER",
 		"method": "freelancerEarnings",
 		"events": [
-			{"type": "MINUTES_1"}
+			{"type": "MINUTES_60"}
 		]
 	}]
 }

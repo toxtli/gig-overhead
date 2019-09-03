@@ -3,15 +3,49 @@ var triggersMap = {};
 var intervals = {};
 var triggerEvents = {};
 
+function getWage(isRemote) {
+  return new Promise((resolve, reject) => {
+    var url = null;
+    if (isRemote) {
+      url = 'https://worker.mturk.com/status_details/';
+      var date = (new Date()).toISOString().split('T')[0];
+      url += date;
+    }
+    getDOMNode(url).then(node => {
+      var elements = node.querySelectorAll('#MainContent div[data-react-props]');
+      //console.log(elements);
+      for (var element of elements) {
+        var data = JSON.parse(element.getAttribute('data-react-props'));
+        if (data.hasOwnProperty('bodyData')) {
+          var totals = {
+            Total: 0,
+            Approved: 0,
+            Pending: 0
+          };
+          for (var record of data.bodyData) {
+            totals.Total += record.reward;
+            if (totals.hasOwnProperty(record.state)) {
+              totals[record.state] += record.reward;  
+            } else {
+              console.log('Uncaught case ' + record.state);
+            }
+          }
+          resolve(totals);
+          break;
+        }
+      }
+    });
+  });
+}
+
 function mturkEarningsLocal() {
 	console.log('mturkEarningsLocal');
-	document.querySelectorAll('.desktop-row.hidden-sm-down').forEach((el)=>{
-		//console.log(el)}
-	});
+	getWage(false).then(totals => console.log(totals));
 }
 
 function mturkEarningsRemote() {
 	console.log('mturkEarningsRemote');
+	getWage(true).then(totals => console.log(totals));
 }
 
 function fiverrEarnings() {
@@ -28,7 +62,6 @@ function upworkEarnings() {
 
 function platformEnable(platform) {
 	getChromeLocal('enabled_platforms', {}).then(platforms => {
-		('https://worker.mturk.com/status_details/2019-08-26')
 		if (!platforms.hasOwnProperty(platform)) {
 			platforms[platform] = true;
 			chrome.storage.local.set({'enabled_platforms': platforms}, ()=>{});
@@ -66,7 +99,7 @@ function loadCrons() {
 						}
 					}
 				});
-			}, minutes*60*100);
+			}, minutes*60*1000);
 		}
 	}
 }
