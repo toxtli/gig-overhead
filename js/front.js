@@ -1,10 +1,9 @@
 //console.log('YEIII');
+var globalUrl = window.location.href;
 
 var libraries = [
   chrome.extension.getURL("js/store.js")
 ];
-
-var globalUrl = window.location.href;
 
 function init_process() {
   init_triggers('front');
@@ -104,19 +103,24 @@ function executeValidation(settings, data) {
   }
 }
 
-var stats = {}
-function logEvent(event, action) {
+var stats = {};
+var lastEvents = {};
+function logEvent(event, action, time) {
   var log = true;
   if (action) {
     if (action == 'OUT') {
+      checkLastInteraction();
       for (var i in stats) {
         stats[i] = false;
       }
+      lastEvents = {};
     } else if (action == 'ONCE') {
       //console.log(stats);
-      if (!stats.hasOwnProperty(event)) {
+      var lastTime = (new Date()).getTime();
+      lastEvents.final = lastTime;
+      lastEvents[event] = lastTime;
+      if (!stats.hasOwnProperty(event))
         stats[event] = false;
-      }
       if (!stats[event]) {
         stats[event] = true;
       } else {
@@ -125,7 +129,7 @@ function logEvent(event, action) {
     }
   }
   if (log) {
-    logURL(globalUrl, event)
+    logURL(globalUrl, event, time)
       .then(data => {
         console.log(data);
         for (record of data) {
@@ -140,13 +144,21 @@ function logEvent(event, action) {
   }
 }
 
+function checkLastInteraction() {
+  if (Object.keys(lastEvents).length > 0) {
+    logEvent('PAGE_LAST', null, lastEvents.final);
+  } else {
+    logEvent('PAGE_TEST', null, (new Date()).getTime());
+  }
+}
+
 loadLibraries(libraries, () => logEvent('PAGE_LOAD'));
 
 window.addEventListener('blur', () => logEvent('PAGE_BLUR', 'OUT'));
 
 window.addEventListener('focus', () => logEvent('PAGE_FOCUS'));
 
-window.addEventListener("beforeunload", () => logEvent('PAGE_CLOSE'));
+window.addEventListener("beforeunload", () => logEvent('PAGE_CLOSE', 'OUT'));
 
 window.addEventListener("unload", () => logEvent('PAGE_UNLOAD'));
 

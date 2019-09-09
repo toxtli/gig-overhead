@@ -40,8 +40,6 @@ function evaluateState(stage, state, obj) {
 }
 
 function processState(state, obj) {
-	console.log('processState');
-	console.log(obj[states[state].param]);
 	//return new Promise((resolve, reject) => {
 		getChromeLocal(state, {}).then(queue => {
 			//console.log(clone(queue));
@@ -115,17 +113,17 @@ function getElementToQueue(state, queue, obj, callback, traverse) {
 		if (obj.hasOwnProperty(index))
 			index = obj[index];
 		if (!traverse.trav.hasOwnProperty(index)) {
-			callback(null,queue)
+			callback(null,queue);
 		} else {
 			if (traverse.items.length > 0) {
 				traverse.trav = traverse.trav[index];
 				return getElementToQueue(state, queue, obj, callback, traverse);
 			} else {
 				if (traverse.trav[index].length > 0) {
-					var lastObj = traverse.trav[index].shift();
-					callback(lastObj, queue)
+					var lastObj = traverse.trav[index].pop();
+					callback(lastObj, queue);
 				} else {
-					callback(null,queue)
+					callback(null,queue);
 				}
 			}
 		}

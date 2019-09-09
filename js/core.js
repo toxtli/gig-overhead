@@ -133,12 +133,16 @@ function urlToRegex(url) {
   return new RegExp(url);
 }
 
-function logSite(obj, globalUrl, event, extra) {
+function logSite(obj, globalUrl, event, extra, time) {
   return new Promise((resolve, reject) => {
     chrome.storage.local.get(['working_status','user_id'], (result) => {
       var extra = null;
       obj.current = globalUrl;
-      obj.time = (new Date()).getTime();
+      if (time == null) {
+        obj.time = (new Date()).getTime();
+      } else {
+        obj.time = time;
+      }
       obj.status = result['working_status'];
       obj.user = result['user_id'];
       var data = [obj.time, obj.user, obj.platform, obj.type, obj.subtype, obj.status, obj.current, event, extra];
@@ -152,7 +156,7 @@ function logSite(obj, globalUrl, event, extra) {
   });
 }
 
-function logURL(globalUrl, event, extra) {
+function logURL(globalUrl, event, extra, time) {
   return new Promise((resolve, reject) => {
     //console.log('logURL');
     isNotBlacklisted(globalUrl)
@@ -188,7 +192,7 @@ function logURL(globalUrl, event, extra) {
               var retrieved = 0;
               var result = [];
               for (var configObj of urlsFound) {
-                logSite(configObj, globalUrl, event, extra).
+                logSite(configObj, globalUrl, event, extra, time).
                   then(data => {
                     result.push(data);
                     if (result.length == urlsFound.length) {
@@ -201,7 +205,7 @@ function logURL(globalUrl, event, extra) {
               var obj = clone(lastSite);
               obj.type = 'UNKNOWN';
               obj.subtype = 'UNKNOWN';
-              logSite(obj, globalUrl, event, extra).
+              logSite(obj, globalUrl, event, extra, time).
                 then(data => {
                   resolve([data])
                 });
@@ -209,7 +213,7 @@ function logURL(globalUrl, event, extra) {
           } else {
             //console.log('!hostFound');
             var obj = clone(defaultSite);
-            logSite(obj, globalUrl, event, extra).
+            logSite(obj, globalUrl, event, extra, time).
               then(data => {
                 resolve([data]);
               });

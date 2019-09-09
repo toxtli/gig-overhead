@@ -3,12 +3,22 @@ var triggersMap = {};
 var intervals = {};
 var triggerEvents = {};
 
+function triggersReset() {
+	chrome.storage.local.set({wages:{}}, ()=>{});
+}
+
+function getStringDate(timestamp) {
+	if (timestamp == null)
+		return (new Date()).toISOString().split('T')[0];
+	return (new Date(timestamp)).toISOString().split('T')[0];
+}
+
 function getWage(isRemote) {
   return new Promise((resolve, reject) => {
     var url = null;
     if (isRemote) {
       url = 'https://worker.mturk.com/status_details/';
-      var date = (new Date()).toISOString().split('T')[0];
+      var date = getStringDate();
       url += date;
     }
     getDOMNode(url).then(node => {
@@ -20,7 +30,8 @@ function getWage(isRemote) {
           var totals = {
             Total: 0,
             Approved: 0,
-            Pending: 0
+            Pending: 0,
+            Paid: 0
           };
           for (var record of data.bodyData) {
             totals.Total += record.reward;
@@ -38,14 +49,51 @@ function getWage(isRemote) {
   });
 }
 
+function saveWage(platform, wage) {
+	getChromeLocal('wages', {}).then(wages => {
+		if (!wages.hasOwnProperty(platform))
+			wages[platform] = {};
+		if (!wages[platform].hasOwnProperty('records'))
+			wages[platform].records = [];
+		var curTime = (new Date()).getTime();
+		if (!wages[platform].hasOwnProperty('lastWage')) {
+			wages[platform].lastWage = {time: curTime, value: 0, details: wage};
+		}
+		var newWage = {
+			time: curTime,
+			value: wage.Total,
+			details: wage
+		};
+		var sameDay = (getStringDate(newWage.time) == getStringDate(wages[platform].lastWage.time));
+		var diffDetails = {};
+		for (var name in wage) {
+			diffDetails[name] = parseFloat(wage[name]) - parseFloat(sameDay?wages[platform].lastWage.details[name]:0);
+		}
+		var diffWage = {
+			time: (newWage.time - wages[platform].lastWage.time),
+			value: (parseFloat(newWage.value) - parseFloat(sameDay?wages[platform].lastWage.value:0)),
+			details: diffDetails
+		};
+		var record = ({
+			"init": wages[platform].lastWage,
+			"end": newWage,
+			"diff": diffWage
+		});
+		wages[platform].records.push(record);
+		wages[platform].lastWage = newWage;
+		setChromeLocal('wages', wages);
+		console.log(wages);
+	});
+}
+
 function mturkEarningsLocal() {
 	console.log('mturkEarningsLocal');
-	getWage(false).then(totals => console.log(totals));
+	getWage(false).then(totals => saveWage('MTURK', totals));
 }
 
 function mturkEarningsRemote() {
 	console.log('mturkEarningsRemote');
-	getWage(true).then(totals => console.log(totals));
+	getWage(true).then(totals => saveWage('MTURK', totals));
 }
 
 function fiverrEarnings() {

@@ -3,7 +3,7 @@
 		"platform": "MTURK",
 		"method": "mturkEarningsRemote",
 		"events": [
-			{"type": "MINUTES_60"}
+			{"type": "MINUTES_1"}
 		]
 	},{
 		"platform": "MTURK",
@@ -15,19 +15,19 @@
 		"platform": "FIVERR",
 		"method": "fiverrEarnings",
 		"events": [
-			{"type": "MINUTES_60"}
+			{"type": "MINUTES_1"}
 		]
 	},{
 		"platform": "UPWORK",
 		"method": "upworkEarnings",
 		"events": [
-			{"type": "MINUTES_60"}
+			{"type": "MINUTES_1"}
 		]
 	},{
 		"platform": "FREELANCER",
 		"method": "freelancerEarnings",
 		"events": [
-			{"type": "MINUTES_60"}
+			{"type": "MINUTES_1"}
 		]
 	}]
 }

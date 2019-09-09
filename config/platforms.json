@@ -120,6 +120,11 @@
 				"url": "https://www.mturk.com/worker/help(.*)",
 				"type": "LEARNING",				
 				"subtype": "PLATFORM_HELP"
+			},
+			{
+				"url": "https://worker.mturk.com/?end_signin(.*)",
+				"type": "PROFILE",				
+				"subtype": "PLATFORM_LOGIN"
 			}
 		]
 	},
