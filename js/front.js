@@ -1,5 +1,7 @@
 //console.log('YEIII');
 var globalUrl = window.location.href;
+var inactivityMinutes = 1;
+var wasInactive = false;
 
 var libraries = [
   chrome.extension.getURL("js/store.js")
@@ -7,6 +9,26 @@ var libraries = [
 
 function init_process() {
   init_triggers('front');
+}
+
+var inactivityInterval = null;
+function inactivity_start() {
+  if (inactivityInterval == null) {
+    inactivityInterval = setTimeout(() => {
+      wasInactive = true;
+      logEvent('PAGE_INACTIVITY')
+    }, inactivityMinutes*60*1000);
+  }
+}
+
+function inactivity_restart() {
+  inactivity_stop();
+  inactivity_start();
+}
+
+function inactivity_stop() {
+  clearTimeout(inactivityInterval);
+  inactivityInterval = null;
 }
 
 function runCode(code) {
@@ -110,12 +132,19 @@ function logEvent(event, action, time) {
   if (action) {
     if (action == 'OUT') {
       checkLastInteraction();
+      inactivity_stop();
       for (var i in stats) {
         stats[i] = false;
       }
       lastEvents = {};
+      wasInactive = false;
     } else if (action == 'ONCE') {
       //console.log(stats);
+      if (wasInactive === true) {
+        wasInactive = false;
+        logEvent('PAGE_REACTIVATE')
+      }
+      inactivity_restart();
       var lastTime = (new Date()).getTime();
       lastEvents.final = lastTime;
       lastEvents[event] = lastTime;
@@ -126,6 +155,8 @@ function logEvent(event, action, time) {
       } else {
         log = false;
       }
+    } else if (action == 'IN') {
+      inactivity_start();
     }
   }
   if (log) {
@@ -152,18 +183,20 @@ function checkLastInteraction() {
   }
 }
 
-loadLibraries(libraries, () => logEvent('PAGE_LOAD'));
+loadLibraries(libraries, () => logEvent('PAGE_LOAD', 'IN'));
 
 window.addEventListener('blur', () => logEvent('PAGE_BLUR', 'OUT'));
 
-window.addEventListener('focus', () => logEvent('PAGE_FOCUS'));
+window.addEventListener('focus', () => logEvent('PAGE_FOCUS', 'IN'));
 
 window.addEventListener("beforeunload", () => logEvent('PAGE_CLOSE', 'OUT'));
 
-window.addEventListener("unload", () => logEvent('PAGE_UNLOAD'));
+// window.addEventListener("unload", () => logEvent('PAGE_UNLOAD'));
 
 window.addEventListener("keypress", () => logEvent('PAGE_KEY', 'ONCE'));
 
 window.addEventListener("click", () => logEvent('PAGE_CLICK', 'ONCE'));
+
+window.addEventListener('scroll', () => logEvent('PAGE_SCROLL', 'ONCE'));
 
 init_process();

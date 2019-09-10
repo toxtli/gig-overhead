@@ -12,6 +12,12 @@
 			{"type": "WORKER_EARNINGS_DETAILS", "value": "PAGE_LOAD"}
 		]
 	},{
+		"platform": "MTURK",
+		"method": "mturkEarningsRemote",
+		"events": [
+			{"type": "TASK_SUBMITED", "value": "PAGE_LOAD"}
+		]
+	},{
 		"platform": "FIVERR",
 		"method": "fiverrEarnings",
 		"events": [

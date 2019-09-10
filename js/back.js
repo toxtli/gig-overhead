@@ -21,7 +21,7 @@ function getStatus(callback) {
 }
 
 function toogleStatus(callback) {
-  chrome.storage.local.setchrome.storage.local.get(['working_status'], (result)=>{
+  chrome.storage.local.get(['working_status'], (result)=>{
     if (result.hasOwnProperty('working_status')) {
       status = result['working_status'];
     }
@@ -137,5 +137,8 @@ chrome.windows.onFocusChanged.addListener((window) => {
   });
 });
 */
+
+if(typeof chrome.app.isInstalled!=='undefined'){
+}
 
 init_process();

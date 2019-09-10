@@ -2,8 +2,8 @@ var states = {
 	"overheads": {
 		"group": ["platform", "activityType"],
 		"filter": {"activity": ["WORKING", "UNKNOWN"]},
-		"init": {"event": ["PAGE_LOAD", "PAGE_FOCUS"]},
-		"end": {"event": ["PAGE_CLOSE", "PAGE_BLUR"]}
+		"init": {"event": ["PAGE_LOAD", "PAGE_FOCUS", "PAGE_REACTIVATE"]},
+		"end": {"event": ["PAGE_CLOSE", "PAGE_BLUR", "PAGE_INACTIVITY"]}
 	},
 	"working": {
 		"group": ["platform"],

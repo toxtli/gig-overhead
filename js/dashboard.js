@@ -88,7 +88,7 @@ function showWages() {
 				for (var i in buckets) {
 					wage = wages[platform].records[i];
 					earnings += wage.diff.value;
-					output += '<tr><td colspan="4">';
+					output += '<tr><td colspan="3">';
 					output += ' Earnings: <span class="tableValue">$ ' + wage.diff.value.toFixed(2) + '</span>';
 					output += ' From: <span class="tableValue">' + toDateTimeString(wage.init.time) + '</span>';
 					output += ' To: <span class="tableValue">' + toDateTimeString(wage.end.time) + '</span>';
@@ -108,10 +108,10 @@ function showWages() {
 					for (var activity in sumVals) {
 						output += '<tr>';
 						output += '<td>' + activity + '</td>';
-						output += '<td>' + sumVals[activity] + '</td>';
+						output += '<td>' + msToHMS(sumVals[activity]) + '</td>';
 						var perValue = (sumVals[activity] / valTotal);
 						output += '<td>' + (perValue * 100).toFixed(2) + '%</td>';
-						output += '<td>$' + (perValue * wage.diff.value).toFixed(3) + '</td>';
+						//output += '<td>$' + (perValue * wage.diff.value).toFixed(3) + '</td>';
 						output += '</tr>';
 					}
 				}
@@ -124,7 +124,7 @@ function showWages() {
 				for (var activity in sumTotals) {
 					output += '<tr>';
 					output += '<td>' + activity + '</td>';
-					output += '<td>' + sumTotals[activity] + '</td>';
+					output += '<td>' + msToHMS(sumTotals[activity]) + '</td>';
 					var perValue = (sumTotals[activity] / valFinal);
 					output += '<td>' + (perValue * 100).toFixed(2) + '%</td>';
 					output += '<td>$' + (perValue * earnings).toFixed(3) + '</td>';
@@ -137,6 +137,18 @@ function showWages() {
 	});
 }
 
+function msToHMS(duration) {
+     var milliseconds = parseInt((duration % 1000) / 100),
+        seconds = parseInt((duration / 1000) % 60),
+        minutes = parseInt((duration / (1000 * 60)) % 60),
+        hours = parseInt((duration / (1000 * 60 * 60)) % 24);
+
+      hours = (hours < 10) ? "0" + hours : hours;
+      minutes = (minutes < 10) ? "0" + minutes : minutes;
+      seconds = (seconds < 10) ? "0" + seconds : seconds;
+
+      return hours + ":" + minutes + ":" + seconds ;
+}
 function showLapses() {
 	chrome.storage.local.get(['lapses'], (result)=>{
 		var count = 0;
@@ -159,28 +171,39 @@ function showLapses() {
 							for (var event in stateObj[platform][activity]) {
 								var records = stateObj[platform][activity][event];
 								if (headers.length == 0) {
-									output += '<thead><tr><th>type</th>';
+									output += '<thead><tr><th>TYPE</th>';
 									headers = Object.keys(records[0]);
-									for (var header in records[0]) {
-										output += '<th>' + header + '</th>';
-									}
+									//for (var header in records[0]) {
+									//	output += '<th>' + header + '</th>';
+									//}
+									output += '<th>TIME</th>';
+									output += '<th>START</th>';
+									output += '<th>END</th>';
 									output += '</tr></thead><tbody>';
 								}
 								for (var index in records) {
 									output += '<tr><td>' + event + '</td>';
-									for (var header in records[index]) {
-										var value = records[index][header];
-										if (header == 'diff') {
-											var seconds = value/(1000);
-											totalTime += seconds;
-											if (!totals.hasOwnProperty(activity))
-												totals[activity] = 0;
-											totals[activity] += seconds;
-											output += '<td>' + seconds + '</td>';
-										} else {
-											output += '<td>' + (new Date(value)).toLocaleString() + '</td>';
-										}
-									}
+									var seconds = records[index].diff/(1000);
+									totalTime += seconds;
+									if (!totals.hasOwnProperty(activity))
+										totals[activity] = 0;
+									totals[activity] += seconds;
+									output += '<td>' + msToHMS(records[index].diff) + '</td>';
+									output += '<td>' + (new Date(records[index].init)).toLocaleString() + '</td>';
+									output += '<td>' + (new Date(records[index].end)).toLocaleString() + '</td>';
+									//for (var header in records[index]) {
+										// var value = records[index][header];
+										// if (header == 'diff') {
+										// 	var seconds = value/(1000);
+										// 	totalTime += seconds;
+										// 	if (!totals.hasOwnProperty(activity))
+										// 		totals[activity] = 0;
+										// 	totals[activity] += seconds;
+										// 	output += '<td>' + seconds + '</td>';
+										// } else {
+										// 	output += '<td>' + (new Date(value)).toLocaleString() + '</td>';
+										// }
+									//}
 									output += '</tr>';
 								}
 							}

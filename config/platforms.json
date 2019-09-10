@@ -60,7 +60,7 @@
 				}
 			},
 			{
-				"url": "https://worker.mturk.com/contact_requester/hit_type_messages/new?assignment_id=(.*)",
+				"url": "https://worker.mturk.com/contact_requester/(.*)",
 				"type": "COMMUNICATION",				
 				"subtype": "MESSAGES_SEND"
 			},
@@ -76,7 +76,7 @@
 				}
 			},
 			{
-				"url": "https://worker.mturk.com/projects/(.*)/tasks?from_submit=true",
+				"url": "https://worker.mturk.com/project(.*)",
 				"type": "WORKING",				
 				"subtype": "TASK_SUBMITED",
 				"js": {
@@ -85,6 +85,23 @@
 					"value": "HIT Submitted",
 					"wait": false
 				}
+			},
+			{
+				"url": "https://www.mturk.com/mturk/externalSubmit",
+				"type": "WORKING",				
+				"subtype": "TASK_SUBMITED",
+				"js": {
+					"selector": ".mturk-alert-content > h3",
+					"action": "equal",
+					"value": "HIT Submitted",
+					"wait": false
+				}
+			},
+			{
+				"url": "https://www.mturkcontent.com/dynamic/hit?assignmentId=(.*)",
+				"type": "WORKING",				
+				"subtype": "TASK_FRAME"
+
 			},
 			{
 				"url": "https://worker.mturk.com/requesters/(.*)/project(.*)",

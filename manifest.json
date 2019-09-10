@@ -31,14 +31,14 @@
         "js/*"
     ],
     "background": {
-        //"page": "background.html",
-        "scripts": [
-            "js/core.js",
-            "js/fsm.js",
-            "js/triggers.js",
-            "js/store.js",
-            "js/back.js"
-        ],
+        "page": "background.html",
+        // "scripts": [
+        //     "js/core.js",
+        //     "js/fsm.js",
+        //     "js/triggers.js",
+        //     "js/store.js",
+        //     "js/back.js"
+        // ],
         "persistent": true
     },
     "permissions": [
