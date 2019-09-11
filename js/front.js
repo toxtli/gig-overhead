@@ -127,7 +127,7 @@ function executeValidation(settings, data) {
 
 var stats = {};
 var lastEvents = {};
-function logEvent(event, action, time) {
+function logEvent(event, action, overwrite) {
   var log = true;
   if (action) {
     if (action == 'OUT') {
@@ -160,7 +160,7 @@ function logEvent(event, action, time) {
     }
   }
   if (log) {
-    logURL(globalUrl, event, time)
+    logURL(globalUrl, event, null, overwrite)
       .then(data => {
         console.log(data);
         for (record of data) {
@@ -177,9 +177,7 @@ function logEvent(event, action, time) {
 
 function checkLastInteraction() {
   if (Object.keys(lastEvents).length > 0) {
-    logEvent('PAGE_LAST', null, lastEvents.final);
-  } else {
-    logEvent('PAGE_TEST', null, (new Date()).getTime());
+    logEvent('PAGE_LAST', null, {time: lastEvents.final});
   }
 }
 

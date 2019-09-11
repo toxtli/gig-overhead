@@ -12,9 +12,21 @@ function triggersReset() {
 	chrome.storage.local.set({wages:{}}, ()=>{});
 }
 
-function allEnableButton() {
-	console.log('ENABLE');
+function allStarted(obj) {
+	//console.log('ENABLE');
 	chrome.runtime.sendMessage({ msg: "enableButton" });
+	chrome.storage.local.set({is_working: true, working_on: obj.platform}, ()=>{});
+}
+
+function allSubmited(obj) {
+	//console.log('DISABLE');
+	console.log(obj);
+	chrome.runtime.sendMessage({ msg: "disableButton" });
+	chrome.storage.local.set({is_working: false}, ()=>{});
+}
+
+function refreshWage() {
+	mturkEarningsRemote();
 }
 
 function getStringDate(timestamp) {
@@ -101,12 +113,6 @@ function mturkEarningsLocal() {
 	getWage(false).then(totals => saveWage('MTURK', totals));
 }
 
-function mturkSubmited() {
-	console.log('DISABLE');
-	chrome.runtime.sendMessage({ msg: "disableButton" });
-	mturkEarningsRemote();
-}
-
 function mturkEarningsRemote() {
 	console.log('mturkEarningsRemote');
 	getWage(true).then(totals => saveWage('MTURK', totals));
@@ -138,7 +144,7 @@ function matchATrigger(data) {
 	if (triggersMap.hasOwnProperty(data.activityType) && triggersMap[data.activityType].hasOwnProperty(data.platform)) {
 		for (var func of triggersMap[data.activityType][data.platform]) {
 			if (data.event == func.value) {
-				window[func.method]();
+				window[func.method](data);
 			}
 		}
 	}

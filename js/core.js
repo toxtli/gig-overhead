@@ -133,97 +133,105 @@ function urlToRegex(url) {
   return new RegExp(url);
 }
 
-function logSite(obj, globalUrl, event, extra, time) {
+function logSite(obj, globalUrl, event, extra, overwrite) {
   return new Promise((resolve, reject) => {
-    chrome.storage.local.get(['working_status','user_id'], (result) => {
-      var extra = null;
-      obj.current = globalUrl;
-      if (time == null) {
+    try {
+      console.log(chrome);
+      chrome.storage.local.get(['working_status','user_id'], (result) => {
+        var extra = null;
+        obj.current = globalUrl;
         obj.time = (new Date()).getTime();
-      } else {
-        obj.time = time;
-      }
-      obj.status = result['working_status'];
-      obj.user = result['user_id'];
-      var data = [obj.time, obj.user, obj.platform, obj.type, obj.subtype, obj.status, obj.current, event, extra];
-      if (obj.hasOwnProperty('js')) {
-        extra = obj.js;
-      }
-      resolve({data:data,extra:extra});
-      //runCode("storeObject('" + JSON.stringify(data) + "')");
-      //storeObject(obj).then(docRef => resolve(docRef)).catch(error => reject(error));
-    });
+        obj.status = result['working_status'];
+        obj.user = result['user_id'];
+        if (overwrite) {
+          for (var field in overwrite) {
+            obj[field] = overwrite[field];
+          }
+        }
+        var data = [obj.time, obj.user, obj.platform, obj.type, obj.subtype, obj.status, obj.current, event, extra];
+        if (obj.hasOwnProperty('js')) {
+          extra = obj.js;
+        }
+        resolve({data:data,extra:extra});
+        //runCode("storeObject('" + JSON.stringify(data) + "')");
+        //storeObject(obj).then(docRef => resolve(docRef)).catch(error => reject(error));
+      });
+    } catch(e) {
+      console.log(e);
+    }
   });
 }
 
-function logURL(globalUrl, event, extra, time) {
+function logURL(globalUrl, event, extra, overwrite) {
   return new Promise((resolve, reject) => {
     //console.log('logURL');
-    isNotBlacklisted(globalUrl)
-      .then(() => {
-        //console.log('NOT BLACKLISTED');
-        if(!extra) {
-          extra = "";
-        }
-        loadConfiguration(platformsFile).then(configData => {
-          //console.log('Loading complete');
-          var hostname = (new URL(globalUrl)).hostname;
-          //console.log(hostname);
-          var hostFound = false;
-          var urlsFound = [];
-          for (var key of Object.keys(configData)) {
-            if (key == hostname) {
-              hostFound = true;
-              //console.log('Hostname found');
-              var lastSite = null;
-              for (var configObj of configData[key]) {
-                var regex = urlToRegex(configObj.url);
-                var matches = globalUrl.match(regex);
-                lastSite = configObj;
-                if (matches) {
-                  urlsFound.push(configObj);
+    if (globalUrl) {
+      isNotBlacklisted(globalUrl)
+        .then(() => {
+          //console.log('NOT BLACKLISTED');
+          if(!extra) {
+            extra = "";
+          }
+          loadConfiguration(platformsFile).then(configData => {
+            //console.log('Loading complete');
+            var hostname = (new URL(globalUrl)).hostname;
+            //console.log(hostname);
+            var hostFound = false;
+            var urlsFound = [];
+            for (var key of Object.keys(configData)) {
+              if (key == hostname) {
+                hostFound = true;
+                //console.log('Hostname found');
+                var lastSite = null;
+                for (var configObj of configData[key]) {
+                  var regex = urlToRegex(configObj.url);
+                  var matches = globalUrl.match(regex);
+                  lastSite = configObj;
+                  if (matches) {
+                    urlsFound.push(configObj);
+                  }
                 }
               }
             }
-          }
-          if (hostFound) {
-            console.log(urlsFound);
-            if (urlsFound.length > 0) {
-              var retrieved = 0;
-              var result = [];
-              for (var configObj of urlsFound) {
-                logSite(configObj, globalUrl, event, extra, time).
+            if (hostFound) {
+              console.log(urlsFound);
+              if (urlsFound.length > 0) {
+                var retrieved = 0;
+                var result = [];
+                for (var configObj of urlsFound) {
+                  logSite(configObj, globalUrl, event, extra, overwrite).
+                    then(data => {
+                      result.push(data);
+                      if (result.length == urlsFound.length) {
+                        resolve(result);
+                      }
+                    });
+                }
+              } else {
+                //console.log('!urlFound');
+                var obj = clone(lastSite);
+                obj.type = 'UNKNOWN';
+                obj.subtype = 'UNKNOWN';
+                logSite(obj, globalUrl, event, extra, overwrite).
                   then(data => {
-                    result.push(data);
-                    if (result.length == urlsFound.length) {
-                      resolve(result);
-                    }
+                    resolve([data])
                   });
               }
             } else {
-              //console.log('!urlFound');
-              var obj = clone(lastSite);
-              obj.type = 'UNKNOWN';
-              obj.subtype = 'UNKNOWN';
-              logSite(obj, globalUrl, event, extra, time).
+              //console.log('!hostFound');
+              var obj = clone(defaultSite);
+              logSite(obj, globalUrl, event, extra, overwrite).
                 then(data => {
-                  resolve([data])
+                  resolve([data]);
                 });
             }
-          } else {
-            //console.log('!hostFound');
-            var obj = clone(defaultSite);
-            logSite(obj, globalUrl, event, extra, time).
-              then(data => {
-                resolve([data]);
-              });
-          }
-      });  
-    })
-    .catch(() => {
-      //console.log('BLACKLISTED');
-      //console.log(globalUrl);
-    });
+        });  
+      })
+      .catch(() => {
+        //console.log('BLACKLISTED');
+        //console.log(globalUrl);
+      });
+    }
   });
 }
 

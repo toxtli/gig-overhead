@@ -1,17 +1,11 @@
-var states = {
-	"overheads": {
-		"group": ["platform", "activityType"],
-		"filter": {"activity": ["WORKING", "UNKNOWN"]},
-		"init": {"event": ["PAGE_LOAD", "PAGE_FOCUS", "PAGE_REACTIVATE"]},
-		"end": {"event": ["PAGE_CLOSE", "PAGE_BLUR", "PAGE_INACTIVITY"]}
-	},
-	"working": {
-		"group": ["platform"],
-		"init": {"activityType": ["TASK_STARTED"], "event": ["PAGE_LOAD"]},
-		"end": {"activityType": ["TASK_SUBMITED"], "event": ["PAGE_LOAD"]}
-		//"init": {"activityType": ["WORKER_QUALIFICATIONS"], "event": ["PAGE_LOAD"]},
-		//"end": {"activityType": ["WORKER_QUALIFICATIONS_PENDING"], "event": ["PAGE_LOAD"]}
-	}
+var states = {};
+
+var fsmFile = 'config/fsm.json';
+
+function init_fsm() {
+	getFileContentOnce(fsmFile).then(fsmObj => {
+		states = fsmObj;
+	});
 }
 
 function fsmInput(obj) {
@@ -22,8 +16,7 @@ function fsmInput(obj) {
 
 function evaluateState(stage, state, obj) {
 	var result = false;
-	var count = 0;
-	var params = Object.keys(states[state][stage]);
+	var parameters = states[state][stage];
 	if (states[state].hasOwnProperty("filter")) {
 		for (var filter in states[state].filter) {
 			if (states[state].filter[filter].indexOf(obj[filter]) != -1) {
@@ -31,12 +24,18 @@ function evaluateState(stage, state, obj) {
 			}
 		}
 	}
-	for (var param of params) {
-		if (states[state][stage][param].indexOf(obj[param]) != -1) {
-			count++;
+	for (var i in parameters) {
+		var count = 0;
+		var params = parameters[i];
+		for (var param in params) {
+			if (states[state][stage][i][param].indexOf(obj[param]) != -1) {
+				count++;
+			}
 		}
+		if (count == Object.keys(params).length)
+			return true;
 	}
-	return (count == params.length);
+	return false;
 }
 
 function processState(state, obj) {
@@ -44,14 +43,14 @@ function processState(state, obj) {
 		getChromeLocal(state, {}).then(queue => {
 			//console.log(clone(queue));
 			if (evaluateState('init', state, obj)) {
-				console.log('INIT');
+				console.log('INIT', obj);
 				setElementToQueue(state, queue, obj, updatedQueue => {
 					//console.log(clone(updatedQueue));
 					setChromeLocal(state, updatedQueue);
 					//reject();
 				});			
 			} else if (evaluateState('end', state, obj)) {
-				console.log('END');
+				console.log('END', obj);
 				getElementToQueue(state, queue, obj, (lastObj, updatedQueue) => {
 					//console.log(clone(updatedQueue));
 					if (lastObj != null) {
@@ -59,6 +58,8 @@ function processState(state, obj) {
 						//console.log(lastObj);
 						setChromeLocal(state, updatedQueue);
 						saveLapse(state, lastObj, obj);
+						if (states[state].hasOwnProperty('execute'))
+							window[states[state].execute](lastObj, obj);
 						//resolve(lastObj);
 					}
 				});	
@@ -154,3 +155,5 @@ function saveLapse(state, lastObj, obj) {
 		}, traverse, lapse);
 	});
 }
+
+init_fsm();

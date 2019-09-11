@@ -13,13 +13,13 @@
 		]
 	},{
 		"platform": "MTURK",
-		"method": "allEnableButton",
+		"method": "allStarted",
 		"events": [
 			{"type": "TASK_STARTED", "value": "PAGE_LOAD"}
 		]
 	},{
 		"platform": "MTURK",
-		"method": "mturkSubmited",
+		"method": "allSubmited",
 		"events": [
 			{"type": "TASK_SUBMITED", "value": "PAGE_LOAD"}
 		]

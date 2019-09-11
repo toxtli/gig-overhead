@@ -52,8 +52,8 @@ function eventFired(data) {
   trackEvent(data);
 }
 
-function logEvent(url, event) {
-  logURL(url, event)
+function logEvent(url, event, overwrite) {
+  logURL(url, event, null, overwrite)
    .then(data => {
      for (record of data) {
        if (record.extra == null) {
@@ -68,6 +68,7 @@ chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
   // Note: this event is fired twice:
   // Once with `changeInfo.status` = "loading" and another time with "complete"
   tabToUrl[tabId] = tab.url;
+  chrome.pageAction.show(tabId);
   getStatus((statusId)=>{
     chrome.pageAction.setIcon({path: "icon"+statusId+".png", tabId: lastTabId});
   });
@@ -87,7 +88,18 @@ chrome.pageAction.onClicked.addListener(function(tab) {
   lastTabId = tab.id;
   toogleStatus((statusId)=>{
     chrome.pageAction.setIcon({path: "icon"+statusId+".png", tabId: lastTabId});
-    logEvent(tab.url, statusId==1?'SYSTEM_ENABLED':'SYSTEM_DISABLED');
+    chrome.storage.local.get(['is_working', 'working_on'], (result) => {
+      if (result.hasOwnProperty('is_working') && result.hasOwnProperty('working_on')) {
+        var is_working = result['is_working'];
+        var working_on = result['working_on'];
+        if (is_working) {
+          logEvent(tab.url, statusId==1?'SYSTEM_ENABLED_WORKING':'SYSTEM_DISABLED_WORKING',
+            {platform: working_on, type: 'WORKING'});
+        } else {
+          logEvent(tab.url, statusId==1?'SYSTEM_ENABLED':'SYSTEM_DISABLED');
+        }
+      }
+    });
   });
 });
 

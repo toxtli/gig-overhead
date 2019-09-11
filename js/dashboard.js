@@ -81,6 +81,9 @@ function showWages() {
 					}
 				}
 				output += '<table border="1">';
+				output += '<thead><tr>';
+				output += '<th>TYPE</th><th>TIME</th><th>PERCENTAGE</th>';
+				output += '</tr></thead>';
 				//console.log(buckets);
 				var sumTotals = {};
 				var valFinal = 0;
@@ -118,6 +121,9 @@ function showWages() {
 				output += '</table>';
 				output += '<br> TOTAL <br>';
 				output += '<table border="1">';
+				output += '<thead><tr>';
+				output += '<th>TYPE</th><th>TIME</th><th>PERCENTAGE</th><th>MONEY</th>';
+				output += '</tr></thead>';
 				output += '<tr><td colspan="4">';
 				output += ' Total earnings: <span class="tableValue">$ ' + earnings.toFixed(2) + '</span>';
 				output += '</td></tr>';
