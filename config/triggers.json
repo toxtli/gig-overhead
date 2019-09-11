@@ -13,7 +13,13 @@
 		]
 	},{
 		"platform": "MTURK",
-		"method": "mturkEarningsRemote",
+		"method": "allEnableButton",
+		"events": [
+			{"type": "TASK_STARTED", "value": "PAGE_LOAD"}
+		]
+	},{
+		"platform": "MTURK",
+		"method": "mturkSubmited",
 		"events": [
 			{"type": "TASK_SUBMITED", "value": "PAGE_LOAD"}
 		]

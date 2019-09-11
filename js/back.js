@@ -128,6 +128,30 @@ for (var i = 0; i < contexts.length; i++) {
   console.log("'" + context + "' item:" + id);
 }
 
+function enableButton() {
+  chrome.storage.local.set({'working_status': 1}, ()=>{
+    chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
+      console.log('ENABLED_BACK');
+      chrome.pageAction.setIcon({path: "icon1.png", tabId: tabs[0].id});
+    });
+  });
+}
+
+function disableButton() {
+  chrome.storage.local.set({'working_status': 0}, ()=>{
+    chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
+      console.log('DISABLED_BACK');
+      chrome.pageAction.setIcon({path: "icon0.png", tabId: tabs[0].id});
+    });
+  });
+}
+
+chrome.runtime.onMessage.addListener(
+  function(request, sender, sendResponse){
+    window[request.msg]();
+  }
+);
+
 /*
 chrome.windows.onFocusChanged.addListener((window) => {
   chrome.windows.getCurrent({populate:true}, (windowObj) => {

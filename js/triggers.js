@@ -3,13 +3,23 @@ var triggersMap = {};
 var intervals = {};
 var triggerEvents = {};
 
+function getCurrentDateTime() {        
+  var tzoffset = (new Date()).getTimezoneOffset() * 60000; //offset in milliseconds
+  return (new Date(Date.now() - tzoffset)).toISOString().slice(0, 19);
+}
+
 function triggersReset() {
 	chrome.storage.local.set({wages:{}}, ()=>{});
 }
 
+function allEnableButton() {
+	console.log('ENABLE');
+	chrome.runtime.sendMessage({ msg: "enableButton" });
+}
+
 function getStringDate(timestamp) {
 	if (timestamp == null)
-		return (new Date()).toISOString().split('T')[0];
+		return getCurrentDateTime().split('T')[0];
 	return (new Date(timestamp)).toISOString().split('T')[0];
 }
 
@@ -89,6 +99,12 @@ function saveWage(platform, wage) {
 function mturkEarningsLocal() {
 	console.log('mturkEarningsLocal');
 	getWage(false).then(totals => saveWage('MTURK', totals));
+}
+
+function mturkSubmited() {
+	console.log('DISABLE');
+	chrome.runtime.sendMessage({ msg: "disableButton" });
+	mturkEarningsRemote();
 }
 
 function mturkEarningsRemote() {
