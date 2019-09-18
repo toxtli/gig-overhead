@@ -26,6 +26,35 @@ function toDateTimeString(timestamp) {
 	return datetime;
 }
 
+function msToHMS(duration) {
+     var milliseconds = parseInt((duration % 1000) / 100),
+        seconds = parseInt((duration / 1000) % 60),
+        minutes = parseInt((duration / (1000 * 60)) % 60),
+        hours = parseInt((duration / (1000 * 60 * 60)) % 24);
+
+      hours = (hours < 10) ? "0" + hours : hours;
+      minutes = (minutes < 10) ? "0" + minutes : minutes;
+      seconds = (seconds < 10) ? "0" + seconds : seconds;
+
+      return hours + ":" + minutes + ":" + seconds ;
+}
+
+function timeToText(duration) {
+	var output = '';
+	var strDuration = msToHMS(duration);
+	if (strDuration == '00:00:00')
+		return 'no time';
+	var timeParts = strDuration.split(':');
+	var hours = parseInt(timeParts[0]);
+	var minutes = parseInt(timeParts[1]);
+	var seconds = parseInt(timeParts[2]);
+	if (hours > 0)
+		return hours + ' hours ' + minutes>0?' and '+minutes+' minutes':'';
+	if (minutes > 0)
+		return minutes+' minutes';
+	return seconds+' seconds';
+}
+
 function showWages() {
 	chrome.storage.local.get(['wages', 'lapses'], (result)=>{
 		// document.getElementById('wageTable').innerHTML += JSON.stringify(wages);
@@ -127,7 +156,14 @@ function showWages() {
 				output += '<tr><td colspan="4">';
 				output += ' Total earnings: <span class="tableValue">$ ' + earnings.toFixed(2) + '</span>';
 				output += '</td></tr>';
+				var workingTime = 0;
+				var overheadTime = 0;
 				for (var activity in sumTotals) {
+					if (activity == 'WORKING') {
+						workingTime += sumTotals[activity];
+					} else {
+						overheadTime += sumTotals[activity];
+					}
 					output += '<tr>';
 					output += '<td>' + activity + '</td>';
 					output += '<td>' + msToHMS(sumTotals[activity]) + '</td>';
@@ -137,24 +173,20 @@ function showWages() {
 					output += '</tr>';
 				}
 				output += '</table>';
+				if (Object.keys(sumTotals).length > 0) {
+					document.getElementById('resultsDescription').style.display = 'block';
+					document.getElementById('totalEarnings').innerHTML = earnings.toFixed(2);
+					document.getElementById('timeWorking').innerHTML = timeToText(workingTime);
+					document.getElementById('timeOverhead').innerHTML = timeToText(overheadTime);
+				} else {
+					document.getElementById('resultsDescription').style.display = 'none';
+				}
 			}
 			document.getElementById('wageTable').innerHTML = output;
 		}
 	});
 }
 
-function msToHMS(duration) {
-     var milliseconds = parseInt((duration % 1000) / 100),
-        seconds = parseInt((duration / 1000) % 60),
-        minutes = parseInt((duration / (1000 * 60)) % 60),
-        hours = parseInt((duration / (1000 * 60 * 60)) % 24);
-
-      hours = (hours < 10) ? "0" + hours : hours;
-      minutes = (minutes < 10) ? "0" + minutes : minutes;
-      seconds = (seconds < 10) ? "0" + seconds : seconds;
-
-      return hours + ":" + minutes + ":" + seconds ;
-}
 function showLapses() {
 	chrome.storage.local.get(['lapses'], (result)=>{
 		var count = 0;
