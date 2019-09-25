@@ -8,15 +8,24 @@
 	<title>DASHBOARD</title>
 </head>
 <body>
-	DASHBOARD
-	<button id="resetButton">RESET</button>
+	<div class="title">
+		DASHBOARD <button id="resetButton">RESET</button>
+	</div>
+	<br>
 	<div id="resultsDescription">
 		Assuming everyone is paying you, you will get a total of $<span class="totals" id="totalEarnings"></span> today.
 		<br>
 		You spent <span class="totals" id="timeWorking"></span> in working activities and <span class="totals" id="timeOverhead"></span> were spent in overheads.
 	</div>
-	<div id="wageTable"></div>
-	<div id="timeTable"></div>
+	<br>
+	<div id="chartContainer"></div>
+	<br>
+	<button id="toogleDetails">SHOW DETAILS</button>
+	<br>
+	<div id="details" hidden>
+		<div id="wageTable"></div>
+		<div id="timeTable"></div>
+	</div>
 	<script src="js/dashboard.js"></script>
 </body>
 </html>

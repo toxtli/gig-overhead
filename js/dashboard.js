@@ -1,4 +1,4 @@
-var automaticRefresh = true;
+var automaticRefresh = false;
 var resetExtension = false;
 
 function init() {
@@ -24,6 +24,11 @@ function clone(obj) {
 function toDateTimeString(timestamp) {
 	var datetime = (new Date(timestamp)).toISOString().split('T').join(' ').split('.')[0];
 	return datetime;
+}
+
+function toDateString(timestamp) {
+	var date = (new Date(timestamp)).toISOString().split('T')[0];
+	return date;
 }
 
 function msToHMS(duration) {
@@ -55,7 +60,7 @@ function timeToText(duration) {
 	return seconds+' seconds';
 }
 
-function showWages() {
+function showWagesDetails() {
 	chrome.storage.local.get(['wages', 'lapses'], (result)=>{
 		// document.getElementById('wageTable').innerHTML += JSON.stringify(wages);
 		if (result.hasOwnProperty('wages') && result.hasOwnProperty('lapses')) {
@@ -97,7 +102,7 @@ function showWages() {
 													obj.init = wages[platform].records[i].end.time;
 													obj.end = lapseObj.end;
 													obj.diff = parseFloat(lapseObj.end) - parseFloat(wages[platform].records[i].end.time);
-													buckets[i + 1].push(obj);	
+													buckets[i + 1].push(obj);
 												}
 											}
 											fromIndex = i;
@@ -187,6 +192,128 @@ function showWages() {
 	});
 }
 
+function substractDays(days, date) {
+	if (!date)
+		var date = new Date();
+ 	date.setDate(date.getDate()-days);
+	return toDateString(date.getTime());
+}
+
+function strToTimestamp(strDate) {
+	return (new Date(strDate).getTime());
+}
+
+function timestampToMinutes(timestamp) {
+	return ((timestamp/1000)/60);
+}
+
+function showWages() {
+	chrome.storage.local.get(['wages', 'lapses'], (result)=>{
+		// document.getElementById('wageTable').innerHTML += JSON.stringify(wages);
+		var initialDate = substractDays(7);
+		if (result.hasOwnProperty('wages') && result.hasOwnProperty('lapses')) {
+			var fromIndex = 0;
+			var wages = result.wages;
+			for (var platform in wages) {
+				for (var i = fromIndex; i < wages[platform].records.length; i++) {
+					console.log(wages[platform].records[i]);
+				}
+			}
+			var buckets = {};
+			var lapses = result.lapses;
+			for (var state in lapses) {
+				for (var platform in lapses[state]) {
+					for (var activity in lapses[state][platform]) {
+						if (activity != 'OTHER') {
+							for (var event in lapses[state][platform][activity]) {
+								for (var record of lapses[state][platform][activity][event]) {
+									console.log(state, platform, activity, event);
+									var initDate = toDateString(record.init);
+									var endDate = toDateString(record.end);
+									if (initDate >= initialDate || endDate >= initialDate) {
+										var elapsedTime = record.diff;
+										var dateField = initDate;
+										if (!buckets.hasOwnProperty(platform))
+											buckets[platform] = {};
+										if (!buckets[platform].hasOwnProperty(activity))
+											buckets[platform][activity] = {};
+										bucket = buckets[platform][activity];
+										if (initDate == endDate) {
+											if (!bucket.hasOwnProperty(dateField))
+												bucket[dateField] = 0;
+											bucket[initDate] += timestampToMinutes(elapsedTime);
+										} else if (initDate < initialDate) {
+											if (!bucket.hasOwnProperty(initialDate))
+												bucket[initialDate] = 0;
+											var elapsedTime = record.end - strToTimestamp(initialDate);
+											bucket[initialDate] += timestampToMinutes(elapsedTime);
+										} else {
+											if (!bucket.hasOwnProperty(initDate))
+												bucket[initDate] = 0;
+											if (!bucket.hasOwnProperty(endDate))
+												bucket[endDate] = 0;
+											bucket[initDate] += timestampToMinutes(strToTimestamp(endDate) - record.init);
+											bucket[endDate] += timestampToMinutes(record.end - strToTimestamp(endDate));
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+			console.log(buckets);
+			plotStackedChart(buckets, "chartContainer");
+		}
+	});
+}
+
+function plotStackedChart(buckets, container) {
+	var chartsParams = {
+		animationEnabled: false,
+		title:{
+			text: "Time spent on paid and unpaid tasks"
+		},
+		axisX: {
+			valueFormatString: "DDD",
+			title: "Dates"
+		},
+		axisY: {
+			prefix: "",
+			title: "Time in minutes"
+		},
+		toolTip: {
+			shared: true
+		},
+		legend:{
+			cursor: "pointer",
+			itemclick: toggleDataSeries
+		},
+		data: []
+	};
+	for (var platform in buckets) {
+		for (var activity in buckets[platform]) {
+			var value = {
+				type: "stackedBar",
+				name: activity,
+				showInLegend: "true",
+				xValueFormatString: "DD, MMM",
+				yValueFormatString: "#.0 minutes",
+				dataPoints: []
+			};
+			for (var date in buckets[platform][activity]) {
+				value.dataPoints.push({
+					x: new Date(date),
+					y: parseFloat(buckets[platform][activity][date])
+				})
+			}
+			chartsParams.data.push(value);
+		}
+	}
+	var chart = new CanvasJS.Chart(container, chartsParams);
+	chart.render();
+}
+
 function showLapses() {
 	chrome.storage.local.get(['lapses'], (result)=>{
 		var count = 0;
@@ -194,7 +321,7 @@ function showLapses() {
 		var totals = {};
 		//console.log(result);
 		if (result.hasOwnProperty('lapses')) {
-			output += '<div id="piechart" class="plot"></div>';
+			output += '<div id="pieContainer" class="plot"></div>';
 			for (var state in result.lapses) {
 				output += '<br>' + state + '<br>';
 				var stateObj = result.lapses[state];
@@ -257,7 +384,7 @@ function showLapses() {
 		}
 		document.getElementById('timeTable').innerHTML = output;
 		styleTables();
-		plotResults(totals);
+		//plotResults(totals);
 	});
 }
 
@@ -279,7 +406,7 @@ function plotResults(totals) {
 				y: totals[label]
 			});
 		}
-		var chart = new CanvasJS.Chart("piechart", {
+		var chart = new CanvasJS.Chart("pieContainer", {
 			animationEnabled: false,
 			data: [{
 				type: "pie",
@@ -292,9 +419,32 @@ function plotResults(totals) {
 	}
 }
 
+function toggleDataSeries(e) {
+	if(typeof(e.dataSeries.visible) === "undefined" || e.dataSeries.visible) {
+		e.dataSeries.visible = false;
+	}
+	else {
+		e.dataSeries.visible = true;
+	}
+	chart.render();
+}
+
+function toogleDetails() {
+	console.log(document.getElementById('details').style.display);
+	if(!document.getElementById('details').style.display || document.getElementById('details').style.display == 'none') {
+		document.getElementById('details').style.display = 'block';
+		document.getElementById('toogleDetails').innerHTML = 'HIDE DETAILS';
+		showLapses();
+	} else {
+		document.getElementById('details').style.display = 'none';
+		document.getElementById('toogleDetails').innerHTML = 'SHOW DETAILS';
+	}
+}
+
 window.addEventListener('load', () => init());
 window.addEventListener('focus', () => init());
 document.getElementById('resetButton').addEventListener('click', () => resetData())
+document.getElementById('toogleDetails').addEventListener('click', () => toogleDetails())
 
 if (automaticRefresh)
 	setInterval(init, 2000);
