@@ -5,7 +5,7 @@ var blakclistFile = 'config/blacklist.json';
 
 var defaultSite = {
   "url": "",
-  "type": "OTHER",        
+  "type": "OTHER",
   "subtype": "OTHER",
   "platform": "OTHER",
   "time": null
@@ -225,7 +225,7 @@ function logURL(globalUrl, event, extra, overwrite) {
                   resolve([data]);
                 });
             }
-        });  
+        });
       })
       .catch(() => {
         //console.log('BLACKLISTED');

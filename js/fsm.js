@@ -10,8 +10,9 @@ function init_fsm() {
 
 function fsmInput(obj) {
 	console.log('fsmInput');
-	processState('overheads', obj);
-	processState('working', obj);
+	for (var state in states) {
+		processState(state, obj);
+	}
 }
 
 function evaluateState(stage, state, obj) {
@@ -48,7 +49,7 @@ function processState(state, obj) {
 					//console.log(clone(updatedQueue));
 					setChromeLocal(state, updatedQueue);
 					//reject();
-				});			
+				});
 			} else if (evaluateState('end', state, obj)) {
 				console.log('END', obj);
 				getElementToQueue(state, queue, obj, (lastObj, updatedQueue) => {
@@ -62,7 +63,7 @@ function processState(state, obj) {
 							window[states[state].execute](lastObj, obj);
 						//resolve(lastObj);
 					}
-				});	
+				});
 			} else {
 				//reject();
 			}
@@ -78,7 +79,7 @@ function setElementToQueue(state, queue, obj, callback, traverse, objToAdd) {
 		};
 		return setElementToQueue(state, queue, obj, callback, traverse, objToAdd);
 	} else if (traverse.items.length > 0) {
-		var index = traverse.items.shift();
+		var index = traverse.items.pop();
 		if (obj.hasOwnProperty(index))
 			index = obj[index];
 		if (!traverse.trav.hasOwnProperty(index)) {
@@ -93,7 +94,7 @@ function setElementToQueue(state, queue, obj, callback, traverse, objToAdd) {
 		} else {
 			if (traverse.items.length > 0) {
 				traverse.trav = traverse.trav[index];
-				return setElementToQueue(state, queue, obj, callback, traverse, objToAdd);				
+				return setElementToQueue(state, queue, obj, callback, traverse, objToAdd);
 			} else {
 				traverse.trav[index].push(objToAdd==null?obj:objToAdd);
 				callback(queue);
@@ -110,7 +111,7 @@ function getElementToQueue(state, queue, obj, callback, traverse) {
 		};
 		return getElementToQueue(state, queue, obj, callback, traverse);
 	} else if (traverse.items.length > 0) {
-		var index = traverse.items.shift();
+		var index = traverse.items.pop();
 		if (obj.hasOwnProperty(index))
 			index = obj[index];
 		if (!traverse.trav.hasOwnProperty(index)) {
@@ -132,7 +133,11 @@ function getElementToQueue(state, queue, obj, callback, traverse) {
 }
 
 function fsmReset() {
-	chrome.storage.local.set({lapses:{}, overheads:{}, working:{}}, ()=>{});
+	var newStatus = {lapses:{}};
+	for (var state in states) {
+		newStatus[state] = {};
+	}
+	chrome.storage.local.set(newStatus, ()=>{});
 }
 
 function saveLapse(state, lastObj, obj) {

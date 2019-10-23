@@ -45,7 +45,7 @@ function loadLibraries(libraries, callback) {
     script.src = library;
     script.onload = function(){
       loadLibraries(libraries, callback);
-    } 
+    }
     document.getElementsByTagName('head')[0].appendChild(script);
   } else {
     callback();
@@ -64,7 +64,7 @@ function storeObjectLocal(data) {
 var validated = false;
 function conditionExecution(e) {
   if (e == null) {
-    return document;      
+    return document;
   } else {
     for (var event of e) {
       for (var node of event.addedNodes) {
@@ -87,12 +87,30 @@ function executeValidation(settings, data) {
         if (target != null && settings.selector) {
           var elements = target.querySelectorAll(settings.selector);
           for (var element of elements) {
-            if (element.innerText == settings.value) {            
+            if (element.innerText == settings.value) {
               validated = true;
               console.log('EVENT');
+              data[0] = (new Date()).getTime();
               eventFired(data);
               return true;
             }
+          }
+        }
+        return false;
+      };
+    } else if (settings.action == 'event') {
+      func = function(e){
+        var target = conditionExecution(e);
+        if (target != null && settings.selector) {
+          var elements = target.querySelectorAll(settings.selector);
+          for (var element of elements) {
+            element.addEventListener(settings.value, () => {
+              validated = true;
+              console.log('EVENT');
+              data[0] = (new Date()).getTime();
+              eventFired(data);
+              return true;
+            });
           }
         }
         return false;
@@ -103,8 +121,9 @@ function executeValidation(settings, data) {
       var target = conditionExecution(e);
       if (target != null && settings.selector) {
         var elements = target.querySelectorAll(settings.selector);
-        if (elements.length > 0) {        
+        if (elements.length > 0) {
           validated = true;
+          data[0] = (new Date()).getTime();
           eventFired(data);
           return true;
         }

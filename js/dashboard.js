@@ -1,18 +1,22 @@
 var automaticRefresh = false;
 var resetExtension = false;
+var states = ['overheads','working','rejected'];
 
 function init() {
 	showWages();
+	showWagesDetails();
 	showLapses();
 }
 
 function resetData() {
-	chrome.storage.local.set({
+	var newState = {
 		lapses:{},
-		overheads:{},
-		working:{},
 		wages:{}
-	}, ()=>{});
+	};
+	for (var state of states) {
+		newState[state] = {};
+	}
+	chrome.storage.local.set(newState, ()=>{});
 	document.getElementById('wageTable').innerHTML = '';
 	document.getElementById('timeTable').innerHTML = '';
 }
@@ -60,7 +64,7 @@ function timeToText(duration) {
 	return seconds+' seconds';
 }
 
-function showWagesDetails() {
+function showWagesDetails(displayDetails) {
 	chrome.storage.local.get(['wages', 'lapses'], (result)=>{
 		// document.getElementById('wageTable').innerHTML += JSON.stringify(wages);
 		if (result.hasOwnProperty('wages') && result.hasOwnProperty('lapses')) {
@@ -118,7 +122,6 @@ function showWagesDetails() {
 				output += '<thead><tr>';
 				output += '<th>TYPE</th><th>TIME</th><th>PERCENTAGE</th>';
 				output += '</tr></thead>';
-				//console.log(buckets);
 				var sumTotals = {};
 				var valFinal = 0;
 				var earnings = 0;
@@ -178,18 +181,32 @@ function showWagesDetails() {
 					output += '</tr>';
 				}
 				output += '</table>';
+				//console.log(sumTotals);
 				if (Object.keys(sumTotals).length > 0) {
 					document.getElementById('resultsDescription').style.display = 'block';
 					document.getElementById('totalEarnings').innerHTML = earnings.toFixed(2);
 					document.getElementById('timeWorking').innerHTML = timeToText(workingTime);
 					document.getElementById('timeOverhead').innerHTML = timeToText(overheadTime);
+					document.getElementById('hourlyWage').innerHTML = calculateHourlyWage(earnings, workingTime, overheadTime);
+
 				} else {
-					document.getElementById('resultsDescription').style.display = 'none';
+					if (displayDetails) {
+						document.getElementById('resultsDescription').style.display = 'none';
+					}
 				}
 			}
-			document.getElementById('wageTable').innerHTML = output;
+			if (displayDetails) {
+				document.getElementById('wageTable').innerHTML = output;
+			}
 		}
 	});
+}
+
+function calculateHourlyWage(earnings, workingTime, overheadTime) {
+	var duration = workingTime + overheadTime;
+	var hours = parseInt(duration / (1000 * 60 * 60)) + 1;
+	var hourlyWage = (earnings / hours).toFixed(2);
+	return hourlyWage;
 }
 
 function substractDays(days, date) {
@@ -216,7 +233,7 @@ function showWages() {
 			var wages = result.wages;
 			for (var platform in wages) {
 				for (var i = fromIndex; i < wages[platform].records.length; i++) {
-					console.log(wages[platform].records[i]);
+					//console.log(wages[platform].records[i]);
 				}
 			}
 			var buckets = {};
@@ -227,7 +244,7 @@ function showWages() {
 						if (activity != 'OTHER') {
 							for (var event in lapses[state][platform][activity]) {
 								for (var record of lapses[state][platform][activity][event]) {
-									console.log(state, platform, activity, event);
+									//console.log(state, platform, activity, event);
 									var initDate = toDateString(record.init);
 									var endDate = toDateString(record.end);
 									if (initDate >= initialDate || endDate >= initialDate) {
@@ -262,7 +279,7 @@ function showWages() {
 					}
 				}
 			}
-			console.log(buckets);
+			//console.log(buckets);
 			plotStackedChart(buckets, "chartContainer");
 		}
 	});
@@ -430,7 +447,7 @@ function toggleDataSeries(e) {
 }
 
 function toogleDetails() {
-	console.log(document.getElementById('details').style.display);
+	//console.log(document.getElementById('details').style.display);
 	if(!document.getElementById('details').style.display || document.getElementById('details').style.display == 'none') {
 		document.getElementById('details').style.display = 'block';
 		document.getElementById('toogleDetails').innerHTML = 'HIDE DETAILS';

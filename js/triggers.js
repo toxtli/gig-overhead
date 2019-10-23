@@ -3,7 +3,7 @@ var triggersMap = {};
 var intervals = {};
 var triggerEvents = {};
 
-function getCurrentDateTime() {        
+function getCurrentDateTime() {
   var tzoffset = (new Date()).getTimezoneOffset() * 60000; //offset in milliseconds
   return (new Date(Date.now() - tzoffset)).toISOString().slice(0, 19);
 }
@@ -22,6 +22,12 @@ function allSubmited(obj) {
 	//console.log('DISABLE');
 	console.log(obj);
 	chrome.runtime.sendMessage({ msg: "disableButton" });
+	chrome.storage.local.set({is_working: false}, ()=>{});
+}
+
+function rejectedTask() {
+  console.log('REJECTED_TASK');
+  chrome.runtime.sendMessage({ msg: "disableButton" });
 	chrome.storage.local.set({is_working: false}, ()=>{});
 }
 
@@ -58,7 +64,7 @@ function getWage(isRemote) {
           for (var record of data.bodyData) {
             totals.Total += record.reward;
             if (totals.hasOwnProperty(record.state)) {
-              totals[record.state] += record.reward;  
+              totals[record.state] += record.reward;
             } else {
               console.log('Uncaught case ' + record.state);
             }
@@ -123,11 +129,11 @@ function fiverrEarnings() {
 }
 
 function freelancerEarnings() {
-	console.log('fiverrEarnings');	
+	console.log('fiverrEarnings');
 }
 
 function upworkEarnings() {
-	console.log('fiverrEarnings');	
+	console.log('fiverrEarnings');
 }
 
 function platformEnable(platform) {
@@ -177,7 +183,7 @@ function loadCrons() {
 function startTriggers(data, mode) {
 	for (var trigger of data.triggers) {
 		for (var event of trigger.events) {
-			if (!triggersMap.hasOwnProperty(event.type)) 
+			if (!triggersMap.hasOwnProperty(event.type))
 				triggersMap[event.type] = {};
 			if (!triggersMap[event.type].hasOwnProperty(trigger.platform))
 				triggersMap[event.type][trigger.platform] = [];

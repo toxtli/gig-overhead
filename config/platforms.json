@@ -4,42 +4,42 @@
 		"urls": [
 			{
 				"url": "https://worker.mturk.com/",
-				"type": "SEARCHING",				
+				"type": "SEARCHING",
 				"subtype": "TASKS_LIST"
 			},
 			{
 				"url": "https://worker.mturk.com/projects",
-				"type": "SEARCHING",				
+				"type": "SEARCHING",
 				"subtype": "TASKS_LIST"
 			},
 			{
 				"url": "https://worker.mturk.com/dashboard(.*)",
-				"type": "PROFILE",				
+				"type": "PROFILE",
 				"subtype": "WORKER_DASHBOARD"
 			},
 			{
 				"url": "https://worker.mturk.com/?filters(.*)",
-				"type": "SEARCHING",				
+				"type": "SEARCHING",
 				"subtype": "TASKS_LIST_FILTER"
 			},
 			{
 				"url": "https://worker.mturk.com/projects/(.*)/tasks?ref=w_wp_skp_top",
-				"type": "WORKING",				
+				"type": "WORKING",
 				"subtype": "TASK_SKIP"
 			},
 			{
 				"url": "https://worker.mturk.com/projects/(.*)/tasks?ref(.*)",
-				"type": "SEARCHING",				
+				"type": "SEARCHING",
 				"subtype": "TASK_PREVIEW"
 			},
 			{
 				"url": "https://worker.mturk.com/projects/(.*)/tasks/(.*)?assignment_id(.*)",
-				"type": "WORKING",				
+				"type": "WORKING",
 				"subtype": "TASK_STARTED"
 			},
 			{
 				"url": "https://worker.mturk.com/projects/(.*)/tasks(.*)",
-				"type": "SEARCHING",				
+				"type": "SEARCHING",
 				"subtype": "TASK_INFO",
 				"js": {
 					"selector": ".modal-header",
@@ -50,7 +50,7 @@
 			},
 			{
 				"url": "https://worker.mturk.com/projects?filters(.*)",
-				"type": "SEARCHING",				
+				"type": "REJECTED",
 				"subtype": "TASK_REJECTED",
 				"js": {
 					"selector": ".mturk-alert-content > h3",
@@ -60,13 +60,24 @@
 				}
 			},
 			{
+				"url": "https://worker.mturk.com/projects/(.*)/tasks/(.*)?assignment_id(.*)",
+				"type": "REJECTED",
+				"subtype": "TASK_REJECTED",
+				"js": {
+					"selector": "button[name='button']",
+					"action": "event",
+					"value": "click",
+					"wait": false
+				}
+			},
+			{
 				"url": "https://worker.mturk.com/contact_requester/(.*)",
-				"type": "COMMUNICATION",				
+				"type": "COMMUNICATION",
 				"subtype": "MESSAGES_SEND"
 			},
 			{
 				"url": "https://worker.mturk.com/requesters/(.*)/projects",
-				"type": "WORKING",				
+				"type": "WORKING",
 				"subtype": "TASK_SUBMITED",
 				"js": {
 					"selector": ".mturk-alert-content > h3",
@@ -77,7 +88,7 @@
 			},
 			{
 				"url": "https://worker.mturk.com/project(.*)",
-				"type": "WORKING",				
+				"type": "WORKING",
 				"subtype": "TASK_SUBMITED",
 				"js": {
 					"selector": ".mturk-alert-content > h3",
@@ -88,7 +99,7 @@
 			},
 			{
 				"url": "https://www.mturk.com/mturk/externalSubmit",
-				"type": "WORKING",				
+				"type": "WORKING",
 				"subtype": "TASK_SUBMITED",
 				"js": {
 					"selector": ".mturk-alert-content > h3",
@@ -99,48 +110,48 @@
 			},
 			{
 				"url": "https://www.mturkcontent.com/dynamic/hit?assignmentId=(.*)",
-				"type": "WORKING",				
+				"type": "WORKING",
 				"subtype": "TASK_FRAME"
 
 			},
 			{
 				"url": "https://worker.mturk.com/requesters/(.*)/project(.*)",
-				"type": "SEARCHING",				
+				"type": "SEARCHING",
 				"subtype": "TASKS_PER_REQUESTER"
 			},
 			{
 				"url": "https://worker.mturk.com/earnings",
-				"type": "PROFILE",				
+				"type": "PROFILE",
 				"subtype": "WORKER_EARNINGS"
 			},
 			{
 				"url": "https://worker.mturk.com/qualifications/assigned",
-				"type": "PROFILE",				
+				"type": "PROFILE",
 				"subtype": "WORKER_QUALIFICATIONS"
 			},
 			{
 				"url": "https://worker.mturk.com/qualifications/pending",
-				"type": "PROFILE",				
+				"type": "PROFILE",
 				"subtype": "WORKER_QUALIFICATIONS_PENDING"
 			},
 			{
 				"url": "https://worker.mturk.com/tasks",
-				"type": "SEARCHING",				
+				"type": "SEARCHING",
 				"subtype": "TASK_QUEUE"
 			},
 			{
 				"url": "https://worker.mturk.com/status_details/(.*)",
-				"type": "PROFILE",				
+				"type": "PROFILE",
 				"subtype": "WORKER_EARNINGS_DETAILS"
 			},
 			{
 				"url": "https://www.mturk.com/worker/help(.*)",
-				"type": "LEARNING",				
+				"type": "LEARNING",
 				"subtype": "PLATFORM_HELP"
 			},
 			{
 				"url": "https://worker.mturk.com/?end_signin(.*)",
-				"type": "PROFILE",				
+				"type": "PROFILE",
 				"subtype": "PLATFORM_LOGIN"
 			}
 		]
@@ -150,47 +161,47 @@
 		"urls": [
 			{
 				"url": "https://www.upwork.com/ab/find-work/recommended",
-				"type": "SEARCHING",				
+				"type": "SEARCHING",
 				"subtype": "TASKS_LIST_RECOMMENDED"
 			},
 			{
 				"url": "https://www.upwork.com/ab/find-work/(.*)",
-				"type": "SEARCHING",				
+				"type": "SEARCHING",
 				"subtype": "TASKS_LIST"
 			},
 			{
 				"url": "https://www.upwork.com/o/jobs/browse/?(.*)",
-				"type": "SEARCHING",				
+				"type": "SEARCHING",
 				"subtype": "TASKS_LIST_FILTER"
 			},
 			{
 				"url": "https://www.upwork.com/messages/rooms/(.*)",
-				"type": "COMMUNICATION",				
+				"type": "COMMUNICATION",
 				"subtype": "MESSAGES_READ"
 			},
 			{
 				"url": "https://www.upwork.com/ab/f/contracts/(.*)#messages",
-				"type": "COMMUNICATION",				
+				"type": "COMMUNICATION",
 				"subtype": "MESSAGES_READ_CONTRACT"
 			},
 			{
 				"url": "https://www.upwork.com/ab/f/home/",
-				"type": "SEARCHING",				
+				"type": "SEARCHING",
 				"subtype": "TASKS_LIST_ACTIVE"
 			},
 			{
 				"url": "https://www.upwork.com/ab/proposals/job/(.*)/apply/(.*)",
-				"type": "PROPOSAL",				
+				"type": "PROPOSAL",
 				"subtype": "TASKS_APPLY"
 			},
 			{
 				"url": "https://www.upwork.com/ab/f/offer/(.*)",
-				"type": "PROPOSAL",				
+				"type": "PROPOSAL",
 				"subtype": "PROPOSAL_OFFER"
 			},
 			{
 				"url": "https://www.upwork.com/ab/f/contracts/(.*)/proposals/new",
-				"type": "PROPOSAL",				
+				"type": "PROPOSAL",
 				"subtype": "PROPOSAL_CONTRACT"
 			}
 		]
@@ -200,27 +211,27 @@
 		"urls": [
 			{
 				"url": "https://www.freelancer.com/dashboard",
-				"type": "SEARCHING",				
+				"type": "SEARCHING",
 				"subtype": "TASKS_DASHBOARD"
 			},
 			{
 				"url": "https://www.freelancer.com/search/projects/?(.*)",
-				"type": "SEARCHING",				
+				"type": "SEARCHING",
 				"subtype": "TASKS_PROJECTS"
 			},
 			{
 				"url": "https://www.freelancer.com/search/contests/?(.*)",
-				"type": "SEARCHING",				
+				"type": "SEARCHING",
 				"subtype": "TASKS_CONTESTS"
 			},
 			{
 				"url": "https://www.freelancer.com/messages/(.*)",
-				"type": "COMMUNICATION",				
+				"type": "COMMUNICATION",
 				"subtype": "MESSAGES_READ"
 			},
 			{
 				"url": "https://www.freelancer.com/projects/(.*)/(.*)/details",
-				"type": "PROPOSAL",				
+				"type": "PROPOSAL",
 				"subtype": "PROPOSAL_PROJECT",
 				"js": {
 					"click": ""
@@ -228,12 +239,12 @@
 			},
 			{
 				"url": "https://www.freelancer.com/projects/(.*)/(.*)/details",
-				"type": "SEARCHING",				
+				"type": "SEARCHING",
 				"subtype": "TASKS_DETAILS"
 			},
 			{
 				"url": "https://www.freelancer.com/dashboard/projects.php?(.*)",
-				"type": "LEARNING",				
+				"type": "LEARNING",
 				"subtype": "TASKS_PROJECTS"
 			}
 		]
@@ -243,22 +254,22 @@
 		"urls": [
 			{
 				"url": "https://www.fiverr.com/users/(.*)/manage_orders?(.*)",
-				"type": "LEARNING",				
+				"type": "LEARNING",
 				"subtype": "TASKS_DESCRIPTION"
 			},
 			{
 				"url": "https://www.fiverr.com/inbox(.*)",
-				"type": "COMMUNICATION",				
+				"type": "COMMUNICATION",
 				"subtype": "MESSAGES_READ"
 			},
 			{
 				"url": "https://www.fiverr.com/users/(.*)/requests",
-				"type": "SEARCHING",				
+				"type": "SEARCHING",
 				"subtype": "TASKS_SEARCH"
 			},
 			{
 				"url": "https://www.fiverr.com/(.*)/(.*)",
-				"type": "LEARNING",				
+				"type": "LEARNING",
 				"subtype": "TASKS_PREVIEW"
 			}
 		]
