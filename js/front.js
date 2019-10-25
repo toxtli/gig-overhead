@@ -89,11 +89,26 @@ function executeValidation(settings, data) {
           for (var element of elements) {
             if (element.innerText == settings.value) {
               validated = true;
-              console.log('EVENT');
+              //console.log('EVENT');
               data[0] = (new Date()).getTime();
               eventFired(data);
               return true;
             }
+          }
+        }
+        return false;
+      };
+    } else if (settings.action == 'display') {
+      func = function(e){
+        var target = conditionExecution(e);
+        if (target != null && settings.selector) {
+          var elements = target.querySelector(settings.selector);
+          if (elements) {
+            validated = true;
+            //console.log('EVENT');
+            data[0] = (new Date()).getTime();
+            eventFired(data);
+            return true;
           }
         }
         return false;
@@ -106,7 +121,7 @@ function executeValidation(settings, data) {
           for (var element of elements) {
             element.addEventListener(settings.value, () => {
               validated = true;
-              console.log('EVENT');
+              //console.log('EVENT');
               data[0] = (new Date()).getTime();
               eventFired(data);
               return true;
@@ -181,10 +196,10 @@ function logEvent(event, action, overwrite) {
   if (log) {
     logURL(globalUrl, event, null, overwrite)
       .then(data => {
-        console.log(data);
+        //console.log(data);
         for (record of data) {
           if (record.extra == null) {
-            console.log(record.data);
+            //console.log(record.data);
             eventFired(record.data);
           } else {
             executeValidation(record.extra, record.data);

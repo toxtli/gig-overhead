@@ -19,6 +19,7 @@ function resetData() {
 	chrome.storage.local.set(newState, ()=>{});
 	document.getElementById('wageTable').innerHTML = '';
 	document.getElementById('timeTable').innerHTML = '';
+	document.getElementById('chartContainer').innerHTML = '';
 }
 
 function clone(obj) {
@@ -238,6 +239,7 @@ function showWages() {
 			}
 			var buckets = {};
 			var lapses = result.lapses;
+			console.log(lapses);
 			for (var state in lapses) {
 				for (var platform in lapses[state]) {
 					for (var activity in lapses[state][platform]) {
@@ -279,7 +281,7 @@ function showWages() {
 					}
 				}
 			}
-			//console.log(buckets);
+			console.log(buckets);
 			plotStackedChart(buckets, "chartContainer");
 		}
 	});

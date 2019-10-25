@@ -20,13 +20,13 @@ function allStarted(obj) {
 
 function allSubmited(obj) {
 	//console.log('DISABLE');
-	console.log(obj);
+	//console.log(obj);
 	chrome.runtime.sendMessage({ msg: "disableButton" });
 	chrome.storage.local.set({is_working: false}, ()=>{});
 }
 
 function rejectedTask() {
-  console.log('REJECTED_TASK');
+  //console.log('REJECTED_TASK');
   chrome.runtime.sendMessage({ msg: "disableButton" });
 	chrome.storage.local.set({is_working: false}, ()=>{});
 }
@@ -66,7 +66,7 @@ function getWage(isRemote) {
             if (totals.hasOwnProperty(record.state)) {
               totals[record.state] += record.reward;
             } else {
-              console.log('Uncaught case ' + record.state);
+              //console.log('Uncaught case ' + record.state);
             }
           }
           resolve(totals);
@@ -110,7 +110,7 @@ function saveWage(platform, wage) {
 		wages[platform].records.push(record);
 		wages[platform].lastWage = newWage;
 		setChromeLocal('wages', wages);
-		console.log(wages);
+		//console.log(wages);
 	});
 }
 
@@ -161,9 +161,9 @@ function loadCrons() {
 	for (var triggerType in triggersMap) {
 		if (triggerType.indexOf('MINUTES_') != -1) {
 			var triggerBase = triggersMap[triggerType];
-			console.log(triggerType);
+			//console.log(triggerType);
 			var minutes = parseInt(triggerType.split('_')[1]);
-			console.log(minutes);
+			//console.log(minutes);
 			intervals[triggerType] = setInterval(()=>{
 				//console.log('CRON_EXECUTED');
 				getChromeLocal('enabled_platforms',{}).then(platforms => {

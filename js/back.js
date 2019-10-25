@@ -14,7 +14,7 @@ function getStatus(callback) {
     if (result.hasOwnProperty('working_status')) {
       status = result['working_status'];
     } else {
-      chrome.storage.local.set({'working_status': status}, function(){}); 
+      chrome.storage.local.set({'working_status': status}, function(){});
     }
     callback(status);
   });
@@ -57,7 +57,7 @@ function logEvent(url, event, overwrite) {
    .then(data => {
      for (record of data) {
        if (record.extra == null) {
-         console.log(record.data);
+         //console.log(record.data);
          eventFired(record.data);
        }
      }
@@ -126,9 +126,9 @@ chrome.tabs.onRemoved.addListener(function(tabId, info) {
 });
 
 function genericOnClick(info, tab) {
-  console.log("item " + info.menuItemId + " was clicked");
-  console.log("info: " + JSON.stringify(info));
-  console.log("tab: " + JSON.stringify(tab));
+  //console.log("item " + info.menuItemId + " was clicked");
+  //console.log("info: " + JSON.stringify(info));
+  //console.log("tab: " + JSON.stringify(tab));
 }
 
 var contexts = ["page","selection","link","editable","image","video","audio"];
@@ -137,13 +137,13 @@ for (var i = 0; i < contexts.length; i++) {
   var title = "Test '" + context + "' menu item";
   var id = chrome.contextMenus.create({"title": title, "contexts":[context],
                                        "onclick": genericOnClick});
-  console.log("'" + context + "' item:" + id);
+  //console.log("'" + context + "' item:" + id);
 }
 
 function enableButton() {
   chrome.storage.local.set({'working_status': 1}, ()=>{
     chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
-      console.log('ENABLED_BACK');
+      //console.log('ENABLED_BACK');
       chrome.pageAction.setIcon({path: "icon1.png", tabId: tabs[0].id});
     });
   });
@@ -152,7 +152,7 @@ function enableButton() {
 function disableButton() {
   chrome.storage.local.set({'working_status': 0}, ()=>{
     chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
-      console.log('DISABLED_BACK');
+      //console.log('DISABLED_BACK');
       chrome.pageAction.setIcon({path: "icon0.png", tabId: tabs[0].id});
     });
   });

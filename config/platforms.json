@@ -49,20 +49,30 @@
 				}
 			},
 			{
-				"url": "https://worker.mturk.com/projects?filters(.*)",
+				"url": "https://worker.mturk.com/projects/(.*)/tasks(.*)",
 				"type": "REJECTED",
-				"subtype": "TASK_REJECTED",
+				"subtype": "TASK_TIMEOUT",
+				"js": {
+					"selector": ".threshold-1",
+					"action": "display",
+					"wait": true
+				}
+			},
+			{
+				"url": "https://worker.mturk.com/projects?(.*)",
+				"type": "REJECTED",
+				"subtype": "TASK_TIMEOUT",
 				"js": {
 					"selector": ".mturk-alert-content > h3",
 					"action": "equal",
-					"value": "There are no more of these HITs available",
+					"value": "Your HIT submission was not successful",
 					"wait": false
 				}
 			},
 			{
 				"url": "https://worker.mturk.com/projects/(.*)/tasks/(.*)?assignment_id(.*)",
 				"type": "REJECTED",
-				"subtype": "TASK_REJECTED",
+				"subtype": "TASK_RETURNED",
 				"js": {
 					"selector": "button[name='button']",
 					"action": "event",

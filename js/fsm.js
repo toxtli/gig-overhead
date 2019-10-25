@@ -42,7 +42,7 @@ function evaluateState(stage, state, obj) {
 function processState(state, obj) {
 	//return new Promise((resolve, reject) => {
 		getChromeLocal(state, {}).then(queue => {
-			//console.log(clone(queue));
+			console.log(obj);
 			if (evaluateState('init', state, obj)) {
 				console.log('INIT', obj);
 				setElementToQueue(state, queue, obj, updatedQueue => {
@@ -79,7 +79,7 @@ function setElementToQueue(state, queue, obj, callback, traverse, objToAdd) {
 		};
 		return setElementToQueue(state, queue, obj, callback, traverse, objToAdd);
 	} else if (traverse.items.length > 0) {
-		var index = traverse.items.pop();
+		var index = traverse.items.shift();
 		if (obj.hasOwnProperty(index))
 			index = obj[index];
 		if (!traverse.trav.hasOwnProperty(index)) {
@@ -111,7 +111,7 @@ function getElementToQueue(state, queue, obj, callback, traverse) {
 		};
 		return getElementToQueue(state, queue, obj, callback, traverse);
 	} else if (traverse.items.length > 0) {
-		var index = traverse.items.pop();
+		var index = traverse.items.shift();
 		if (obj.hasOwnProperty(index))
 			index = obj[index];
 		if (!traverse.trav.hasOwnProperty(index)) {
@@ -143,7 +143,7 @@ function fsmReset() {
 function saveLapse(state, lastObj, obj) {
 	getChromeLocal('lapses', {}).then(lapses => {
 		console.log('saveLapse');
-		//console.log(clone(lapses));
+		console.log(clone(lapses));
 		var lapse = ({
 			"init": lastObj.time,
 			"end": obj.time,
@@ -153,7 +153,7 @@ function saveLapse(state, lastObj, obj) {
 			"items": [state, "platform", "activity", "activityType"],
 			"trav": lapses
 		};
-		console.log(clone(traverse));
+		//console.log(clone(traverse));
 		setElementToQueue(state, lapses, obj, (lapsesUpdated) => {
 			console.log(clone(lapsesUpdated));
 			setChromeLocal('lapses', lapsesUpdated);

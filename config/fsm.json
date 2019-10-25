@@ -1,7 +1,7 @@
 {
 	"overheads": {
 		"group": ["platform", "activityType"],
-		"filter": {"activity": ["WORKING", "UNKNOWN"]},
+		"filter": {"activity": ["WORKING", "REJECTED", "UNKNOWN"]},
 		"init": [{"event": ["PAGE_LOAD", "PAGE_FOCUS", "PAGE_REACTIVATE"]}],
 		"end": [{"event": ["PAGE_CLOSE", "PAGE_BLUR", "PAGE_INACTIVITY"]}]
 	},
@@ -25,7 +25,7 @@
 			{"event": ["SYSTEM_ENABLED_WORKING"]}
 		],
 		"end": [
-			{"activityType": ["TASK_REJECTED"], "event": ["PAGE_LOAD"]}
+			{"activity": ["REJECTED"]}
 		]
 	}
 }

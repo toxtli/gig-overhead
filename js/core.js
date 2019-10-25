@@ -136,7 +136,7 @@ function urlToRegex(url) {
 function logSite(obj, globalUrl, event, extra, overwrite) {
   return new Promise((resolve, reject) => {
     try {
-      console.log(chrome);
+      //console.log(chrome);
       chrome.storage.local.get(['working_status','user_id'], (result) => {
         var extra = null;
         obj.current = globalUrl;
@@ -157,7 +157,7 @@ function logSite(obj, globalUrl, event, extra, overwrite) {
         //storeObject(obj).then(docRef => resolve(docRef)).catch(error => reject(error));
       });
     } catch(e) {
-      console.log(e);
+      //console.log(e);
     }
   });
 }
@@ -194,7 +194,7 @@ function logURL(globalUrl, event, extra, overwrite) {
               }
             }
             if (hostFound) {
-              console.log(urlsFound);
+              //console.log(urlsFound);
               if (urlsFound.length > 0) {
                 var retrieved = 0;
                 var result = [];
