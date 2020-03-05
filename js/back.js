@@ -64,6 +64,13 @@ function logEvent(url, event, overwrite) {
    });
 }
 
+chrome.storage.local.get(['user_id'], (result) => {
+  if (!result.hasOwnProperty('user_id')) {
+    var userId = getRandomToken();
+    chrome.storage.local.set({'user_id': userId}, () => {});
+  }
+});
+
 chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
   // Note: this event is fired twice:
   // Once with `changeInfo.status` = "loading" and another time with "complete"
@@ -101,13 +108,6 @@ chrome.pageAction.onClicked.addListener(function(tab) {
       }
     });
   });
-});
-
-chrome.storage.local.get(['user_id'], (result) => {
-  if (!result.hasOwnProperty('user_id')) {
-    var userId = getRandomToken();
-    chrome.storage.local.set({'user_id': userId}, () => {});
-  }
 });
 
 chrome.tabs.onSelectionChanged.addListener(function(tabId, tabObj) {
@@ -163,6 +163,16 @@ chrome.runtime.onMessage.addListener(
     window[request.msg]();
   }
 );
+
+chrome.runtime.onInstalled.addListener(function (object) {
+  chrome.storage.local.get(['user_id'], (result) => {
+    var userId = result['user_id'];
+    var url = 'https://docs.google.com/forms/d/e/1FAIpQLSckJe4xjI1-AyI62CoWaiA5E0SitH0MV7Vork9NFDxtjRyL9Q/viewform?usp=pp_url&entry.2123034432=' + userId;
+    chrome.tabs.create({url: url}, function (tab) {
+      console.log("New tab launched");
+    });
+  });
+});
 
 /*
 chrome.windows.onFocusChanged.addListener((window) => {

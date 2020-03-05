@@ -23,23 +23,5 @@
 		"events": [
 			{"type": "TASK_SUBMITED", "value": "PAGE_LOAD"}
 		]
-	},{
-		"platform": "FIVERR",
-		"method": "fiverrEarnings",
-		"events": [
-			{"type": "MINUTES_1"}
-		]
-	},{
-		"platform": "UPWORK",
-		"method": "upworkEarnings",
-		"events": [
-			{"type": "MINUTES_1"}
-		]
-	},{
-		"platform": "FREELANCER",
-		"method": "freelancerEarnings",
-		"events": [
-			{"type": "MINUTES_1"}
-		]
 	}]
 }
