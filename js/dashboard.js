@@ -6,6 +6,27 @@ function init() {
 	showWages();
 	showWagesDetails();
 	showLapses();
+	checkStudy();
+}
+
+function checkStudy() {
+	getConfiguration().then(config => {
+      if (config.isUserStudy) {
+        document.getElementById('isUserStudy').removeAttribute("hidden");
+        getChromeLocal('installed_time', 0).then(time => {
+        	var diff = (new Date()).getTime() - time;
+        	var days = parseInt(diff/(24*60*60*1000));
+        	if (days < config.studyDurationDays) {
+        		var remainingDays = config.studyDurationDays - days;
+        		document.getElementById('remainingTime').innerHTML = `There are still <b>${remainingDays} days left</b> before showing the final survey link.`;
+        	} else {
+        		getChromeLocal('user_id', 0).then(user => {
+        			document.getElementById('remainingTime').innerHTML = `Click <a target="_blank" href="${config.finalSurveyUrl}${user}">here</a> to take the final survey.`;
+        		})
+        	}
+        })
+      }
+    });
 }
 
 function resetData() {

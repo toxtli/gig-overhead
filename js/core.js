@@ -1,5 +1,6 @@
 //console.log('YEIII');
 
+var configFile = 'config/general.json';
 var platformsFile = 'config/platforms.json';
 var blakclistFile = 'config/blacklist.json';
 
@@ -60,6 +61,13 @@ function trackEvent(data) {
   var obj = mapObject(data);
   fsmInput(obj);
   matchATrigger(obj);
+}
+
+function getConfiguration() {
+  return new Promise((resolve, reject) => {
+    getFileContentOnce(configFile)
+      .then(config => resolve(config))
+  });
 }
 
 function isNotBlacklisted(localUrl) {

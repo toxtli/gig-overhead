@@ -3,6 +3,7 @@
 <head>
 	<link rel="stylesheet" href="css/tabulator.css">
 	<link rel="stylesheet" href="css/dashboard.css">
+	<script src="js/core.js"></script>
 	<script src="libs/canvasjs.js"></script>
 	<script src="libs/tabulator.js"></script>
 	<title>DASHBOARD</title>
@@ -13,6 +14,9 @@
 	</div>
 	<br>
 	<div id="resultsDescription">
+		<div id="isUserStudy" hidden>
+			Thanks for participating in this user study. <span id="remainingTime"></span>
+		</div>
 		Assuming everyone you worked for pays you, you will get a total of $<span class="totals" id="totalEarnings"></span> from today's work.
 		<br>
 		You spent <span class="totals" id="timeWorking"></span> minutes doing paid work and <span class="totals" id="timeOverhead"></span> minutes doing unpaid work.
