@@ -48,7 +48,7 @@ function getRandomToken() {
 }
 
 function eventFired(data) {
-  storeObject(JSON.stringify(data));
+  storeObject(JSON.stringify(data), 'store');
   trackEvent(data);
 }
 

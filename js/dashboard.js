@@ -7,6 +7,13 @@ function init() {
 	showWagesDetails();
 	showLapses();
 	checkStudy();
+	syncData();
+}
+
+function syncData() {
+	chrome.storage.local.get(['user_id', 'lapses', 'wages', 'installed_time'], (result)=>{
+      storeObject(JSON.stringify(result), 'local');
+    });
 }
 
 function checkStudy() {

@@ -58,7 +58,7 @@ function eventFired(data) {
 }
 
 function storeObjectLocal(data) {
-  runCode("storeObject('" + JSON.stringify(data) + "')");
+  runCode("storeObject('" + JSON.stringify(data) + "', 'store')");
 }
 
 var validated = false;
