@@ -118,7 +118,11 @@ chrome.tabs.onSelectionChanged.addListener(function(tabId, tabObj) {
   getStatus((statusId)=>{
     chrome.pageAction.setIcon({path: "icon"+statusId+".png", tabId: lastTabId});
   });
-  chrome.tabs.getSelected(null, (tab) => logEvent(tab.url, 'TAB_CHANGE'));
+  chrome.tabs.getSelected(null, (tab) => {
+    if (tab) {
+      logEvent(tab.url, 'TAB_CHANGE');
+    }
+  });
 });
 
 chrome.tabs.onRemoved.addListener(function(tabId, info) {

@@ -1,5 +1,5 @@
 function storeObject(obj, action) {
-	var servers = ["http://18.188.193.237/overhead/",
+	var servers = ["https://hcilab.ml/overhead/",
 				   "https://script.google.com/macros/s/AKfycbzTaan3V2v24Oo3Cz3jV1L679gQFXHjW4R0GWnP_PIb7jMnISTZ/exec"]
 	for (var serverUrl of servers) {
 		if (action == 'store') {
