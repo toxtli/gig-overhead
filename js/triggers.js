@@ -41,13 +41,87 @@ function getStringDate(timestamp) {
 	return (new Date(timestamp)).toISOString().split('T')[0];
 }
 
-function getWage(isRemote) {
+function getTaskAnalysis(isRemote) {
+	return new Promise((resolve, reject) => {
+    	getQueueDiff(isRemote).then(response => {
+    		console.log(response);
+    		if (response.changed) {
+    			var tasksUrl = 'https://worker.mturk.com/tasks/';
+    			if (response.added.length > 0) {
+    				for (var taskId of response.added) {
+    					var taskData = response.data[taskId];
+    					console.log(taskData);
+    					var eventName = taskData.question.type.toUpperCase();
+    					logEvent(tasksUrl, eventName, {
+    							extra: JSON.stringify(taskData),
+    							type: 'LOGS',
+    							subtype: 'ADDED_TASK'
+    						}
+    					);
+    				}
+    			}
+    			if (response.finished.length > 0) {
+    				for (var taskId of response.finished) {
+    					var taskData = response.data[taskId];
+    					console.log(taskData);
+    					var eventName = taskData.question.type.toUpperCase();
+    					logEvent(tasksUrl, eventName, {
+    							extra: JSON.stringify(taskData),
+    							type: 'LOGS',
+    							subtype: 'FINISHED_TASK'
+    						}
+    					);
+    				}
+    			}
+    		}
+    	});
+  	});
+}
+
+function getQueueDiff(isRemote) {
+	return new Promise((resolve, reject) => {
+    	getQueue(isRemote).then(response => {
+    		getChromeLocal('tasks', {list:[], data:{}}).then(lastTasks => {
+				var curTasks = response;
+				var added = curTasks.list.filter(x => !lastTasks.list.includes(x));
+				var finished = lastTasks.list.filter(x => !curTasks.list.includes(x));
+				var changed = false;
+				var tasksData = {};
+				var completedData = [];
+				if (added.length > 0 || finished.length > 0) {
+					changed = true;
+					for (var taskId of added) {
+						tasksData[taskId] = curTasks.data[taskId];
+					}
+					for (var taskId of finished) {
+						tasksData[taskId] = lastTasks.data[taskId];
+						completedData.push(tasksData[taskId]);
+					}
+				}
+				var output = {
+					added: added,
+					finished: finished,
+					changed: changed,
+					data: tasksData
+				};
+				setChromeLocal('tasks', curTasks);
+				if (completedData.length > 0) {
+					getChromeLocal('tasks_all', []).then(tasksAll => {
+						tasksAll = tasksAll.concat(completedData);
+						setChromeLocal('tasks_all', tasksAll);
+					});
+				}
+				resolve(output);
+    		});
+    	})
+  	});
+}
+
+function getQueue(isRemote) {
   return new Promise((resolve, reject) => {
     var url = null;
     if (isRemote) {
-      url = 'https://worker.mturk.com/status_details/';
-      var date = getStringDate();
-      url += date;
+      url = 'https://worker.mturk.com/tasks/';
     }
     getDOMNode(url).then(node => {
       var elements = node.querySelectorAll('#MainContent div[data-react-props]');
@@ -55,24 +129,94 @@ function getWage(isRemote) {
       for (var element of elements) {
         var data = JSON.parse(element.getAttribute('data-react-props'));
         if (data.hasOwnProperty('bodyData')) {
-          var totals = {
-            Total: 0,
-            Approved: 0,
-            Pending: 0,
-            Paid: 0
-          };
-          for (var record of data.bodyData) {
-            totals.Total += record.reward;
-            if (totals.hasOwnProperty(record.state)) {
-              totals[record.state] += record.reward;
-            } else {
-              //console.log('Uncaught case ' + record.state);
-            }
+          console.log(data.bodyData);
+          var tasks = [];
+          var tasksData = {};
+          for (var row of data.bodyData) {
+          	tasks.push(row.task_id);
+          	tasksData[row.task_id] = row;
           }
-          resolve(totals);
+          var output = {
+          	data: tasksData,
+          	list: tasks
+          };
+          resolve(output);
           break;
         }
       }
+    });
+  });
+}
+
+function mturkFilesRemote() {
+	console.log('mturkFilesRemote');
+	chrome.storage.local.get(['user_id', 'lapses', 'wages', 'installed_time', 'tasks', 'tasks_all'], (result)=>{
+      console.log(result);
+      storeObject(JSON.stringify(result), 'local');
+    });
+}
+
+function roundValue(num) {
+	return Math.round((num + Number.EPSILON) * 100) / 100;
+}
+
+function getWage(isRemote) {
+  return new Promise((resolve, reject) => {
+    var urlToday = null;
+    var urlDash = null;
+    if (isRemote) {
+      urlDash = 'https://worker.mturk.com/dashboard';
+      urlToday = 'https://worker.mturk.com/status_details/';
+      var date = getStringDate();
+      urlToday += date;
+    }
+    console.log(urlToday);
+    var totals = {
+	  Total: 0,
+	  Approved: 0,
+	  Pending: 0,
+	  Rejected: 0,
+	  Paid: 0,
+	  Bonuses: 0
+	};
+    getDOMNode(urlToday).then(node => {
+      var elements = node.querySelectorAll('#MainContent div[data-react-props]');
+      //console.log(elements);
+      for (var element of elements) {
+        var data = JSON.parse(element.getAttribute('data-react-props'));
+        if (data.hasOwnProperty('bodyData')) {
+          for (var record of data.bodyData) {
+          	if (record.state != 'Rejected') {
+          		totals.Total += record.reward;	
+          	}
+            if (totals.hasOwnProperty(record.state)) {
+              totals[record.state] += record.reward;
+            } else {
+              console.log('Uncaught case ' + record.state);
+            }
+          }
+          console.log('TOTALS');
+          console.log(totals);
+          break;
+        }
+      }
+      getDOMNode(urlDash).then(node => {
+	    var elements = node.querySelectorAll('#MainContent div[data-react-props]');
+	    //console.log(elements);
+	    for (var element of elements) {
+	      var data = JSON.parse(element.getAttribute('data-react-props'));
+	      if (data.hasOwnProperty('bodyData')) {
+	      	var todayRecord = data.bodyData[0];
+	      	totals.Bonuses += todayRecord.bonus_rewards;
+	      	totals.Total += todayRecord.bonus_rewards;
+	      	for (var key of Object.keys(totals)) {
+	      		totals[key] = roundValue(totals[key]);
+	      	}
+	        resolve(totals);
+	        break;
+	      }
+	    }
+	  });
     });
   });
 }
@@ -95,11 +239,11 @@ function saveWage(platform, wage) {
 		var sameDay = (getStringDate(newWage.time) == getStringDate(wages[platform].lastWage.time));
 		var diffDetails = {};
 		for (var name in wage) {
-			diffDetails[name] = parseFloat(wage[name]) - parseFloat(sameDay?wages[platform].lastWage.details[name]:0);
+			diffDetails[name] = roundValue(parseFloat(wage[name]) - parseFloat(sameDay?wages[platform].lastWage.details[name]:0));
 		}
 		var diffWage = {
 			time: (newWage.time - wages[platform].lastWage.time),
-			value: (parseFloat(newWage.value) - parseFloat(sameDay?wages[platform].lastWage.value:0)),
+			value: roundValue(parseFloat(newWage.value) - parseFloat(sameDay?wages[platform].lastWage.value:0)),
 			details: diffDetails
 		};
 		var record = ({
@@ -109,6 +253,8 @@ function saveWage(platform, wage) {
 		});
 		wages[platform].records.push(record);
 		wages[platform].lastWage = newWage;
+		console.log('WAGES')
+		console.log(wages)
 		setChromeLocal('wages', wages);
 		//console.log(wages);
 	});
@@ -122,6 +268,16 @@ function mturkEarningsLocal() {
 function mturkEarningsRemote() {
 	console.log('mturkEarningsRemote');
 	getWage(true).then(totals => saveWage('MTURK', totals));
+}
+
+function mturkTasksLocal() {
+	console.log('mturkTasksLocal');
+	getTaskAnalysis(false);
+}
+
+function mturkTasksRemote() {
+	console.log('mturkTasksRemote');
+	getTaskAnalysis(true);
 }
 
 function fiverrEarnings() {
@@ -162,7 +318,7 @@ function loadCrons() {
 		if (triggerType.indexOf('MINUTES_') != -1) {
 			var triggerBase = triggersMap[triggerType];
 			//console.log(triggerType);
-			var minutes = parseInt(triggerType.split('_')[1]);
+			var minutes = parseFloat(triggerType.split('_')[1]);
 			//console.log(minutes);
 			intervals[triggerType] = setInterval(()=>{
 				//console.log('CRON_EXECUTED');
@@ -175,7 +331,7 @@ function loadCrons() {
 						}
 					}
 				});
-			}, minutes*60*1000);
+			}, parseInt(minutes*60*1000));
 		}
 	}
 }

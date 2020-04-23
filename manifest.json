@@ -1,8 +1,9 @@
 {
     "manifest_version": 2,
     "name": "Gig Overhead",
+    "description": "This is an experimental plugin that tracks your performance in MTurk. Please fill the initial and end surveys and uninstall it after a week.",
     "minimum_chrome_version": "24.0.1307.0",
-    "version": "0.1.0",
+    "version": "0.2.0",
     "homepage_url": "http://bit.ly/study-instructions",
     "icons": {
         "16": "icon_16.png",

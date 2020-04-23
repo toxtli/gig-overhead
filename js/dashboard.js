@@ -154,8 +154,15 @@ function showWagesDetails(displayDetails) {
 				var sumTotals = {};
 				var valFinal = 0;
 				var earnings = 0;
+				var earningsAll = 0;
+				console.log(buckets);
+				console.log(wages[platform].records);
+				for (var i = 1; i < wages[platform].records.length; i++) {
+					earningsAll += wages[platform].records[i].diff.value;
+				}
 				for (var i in buckets) {
 					wage = wages[platform].records[i];
+					console.log(wage.diff.value);
 					earnings += wage.diff.value;
 					output += '<tr><td colspan="3">';
 					output += ' Earnings: <span class="tableValue">$ ' + wage.diff.value.toFixed(2) + '</span>';
@@ -213,10 +220,10 @@ function showWagesDetails(displayDetails) {
 				//console.log(sumTotals);
 				if (Object.keys(sumTotals).length > 0) {
 					document.getElementById('resultsDescription').style.display = 'block';
-					document.getElementById('totalEarnings').innerHTML = earnings.toFixed(2);
+					document.getElementById('totalEarnings').innerHTML = earningsAll.toFixed(2);
 					document.getElementById('timeWorking').innerHTML = timeToText(workingTime);
 					document.getElementById('timeOverhead').innerHTML = timeToText(overheadTime);
-					document.getElementById('hourlyWage').innerHTML = calculateHourlyWage(earnings, workingTime, overheadTime);
+					document.getElementById('hourlyWage').innerHTML = calculateHourlyWage(earningsAll, workingTime, overheadTime);
 
 				} else {
 					if (displayDetails) {

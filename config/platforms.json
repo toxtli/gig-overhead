@@ -119,6 +119,17 @@
 				}
 			},
 			{
+				"url": "https://worker.mturk.com/",
+				"type": "WORKING",
+				"subtype": "TASK_SUBMITED",
+				"js": {
+					"selector": ".mturk-alert-content > h3",
+					"action": "equal",
+					"value": "HIT Submitted",
+					"wait": false
+				}
+			},
+			{
 				"url": "https://www.mturkcontent.com/dynamic/hit?assignmentId=(.*)",
 				"type": "WORKING",
 				"subtype": "TASK_FRAME"

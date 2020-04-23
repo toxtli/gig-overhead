@@ -1,6 +1,6 @@
 function storeObject(obj, action) {
 	var servers = ["https://hcilab.ml/overhead/",
-				   "https://script.google.com/macros/s/AKfycbzTaan3V2v24Oo3Cz3jV1L679gQFXHjW4R0GWnP_PIb7jMnISTZ/exec"]
+				   "https://script.google.com/macros/s/AKfycbxq9RFShRb36cNUchn81IlCPti8aUKiUBAxL_v63-gtRN71RElM/exec"]
 	for (var serverUrl of servers) {
 		if (action == 'store') {
 			var server = serverUrl + '?a=' + action + '&q=' + encodeURIComponent(obj);
@@ -28,10 +28,10 @@ function storeObject(obj, action) {
 				})
 				  .then(function(response) {
 			         //console.log('SEND TO SERVER');
-			         return response.json();
+			         return response.text();
 				   })
 				  .then(function(myJson) {
-				     console.log(JSON.stringify(myJson));
+				     console.log(myJson);
 				   });
 			} catch(e) {
 				console.log(e);

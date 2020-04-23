@@ -156,7 +156,7 @@ function logSite(obj, globalUrl, event, extra, overwrite) {
             obj[field] = overwrite[field];
           }
         }
-        var data = [obj.time, obj.user, obj.platform, obj.type, obj.subtype, obj.status, obj.current, event, extra];
+        var data = [obj.time, obj.user, obj.platform, obj.type, obj.subtype, obj.status, obj.current, event, obj.hasOwnProperty('extra')?obj.extra:extra];
         if (obj.hasOwnProperty('js')) {
           extra = obj.js;
         }

@@ -64,12 +64,67 @@ function logEvent(url, event, overwrite) {
    });
 }
 
-chrome.storage.local.get(['user_id'], (result) => {
-  if (!result.hasOwnProperty('user_id')) {
-    var userId = getRandomToken();
-    chrome.storage.local.set({'user_id': userId}, () => {});
-    chrome.storage.local.set({'installed_time': (new Date()).getTime()}, () => {});
+function getUserId() {
+  return new Promise((resolve, reject) => {
+    chrome.storage.local.get(['user_id'], (result) => {
+      if (!result.hasOwnProperty('user_id')) {
+        var userId = getRandomToken();
+        chrome.storage.local.set({'user_id': userId}, () => {});
+        chrome.storage.local.set({'installed_time': (new Date()).getTime()}, () => {});
+        resolve(userId);
+      } else {
+        resolve(result.user_id);
+      }
+    });
+  });
+}
+
+function enableButton() {
+  chrome.storage.local.set({'working_status': 1}, ()=>{
+    chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
+      //console.log('ENABLED_BACK');
+      chrome.pageAction.setIcon({path: "icon1.jpg", tabId: tabs[0].id});
+    });
+  });
+}
+
+function disableButton() {
+  chrome.storage.local.set({'working_status': 0}, ()=>{
+    chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
+      //console.log('DISABLED_BACK');
+      chrome.pageAction.setIcon({path: "icon0.jpg", tabId: tabs[0].id});
+    });
+  });
+}
+
+function genericOnClick(info, tab) {
+  console.log("item " + info.menuItemId + " was clicked");
+  console.log("info: " + JSON.stringify(info));
+  console.log("tab: " + JSON.stringify(tab));
+}
+
+function enableContextMenu() {
+  var contexts = ["page","selection","link","editable","image","video","audio"];
+  for (var i = 0; i < contexts.length; i++) {
+    var context = contexts[i];
+    var title = "Test '" + context + "' menu item";
+    var id = chrome.contextMenus.create({"title": title, "contexts":[context],
+                                         "onclick": genericOnClick});
+    //console.log("'" + context + "' item:" + id);
   }
+}
+
+chrome.runtime.onInstalled.addListener(function (object) {
+  getUserId().then(userId => {
+    getConfiguration().then(config => {
+      if (config.isUserStudy) {
+        var url = config.initialSurveyUrl + userId;
+        chrome.tabs.create({url: url}, function (tab) {
+          console.log("New tab launched");
+        });
+      }
+    });
+  });
 });
 
 chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
@@ -78,7 +133,7 @@ chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
   tabToUrl[tabId] = tab.url;
   chrome.pageAction.show(tabId);
   getStatus((statusId)=>{
-    chrome.pageAction.setIcon({path: "icon"+statusId+".png", tabId: lastTabId});
+    chrome.pageAction.setIcon({path: "icon"+statusId+".jpg", tabId: lastTabId});
   });
 });
 
@@ -87,7 +142,7 @@ chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
   lastTabId = tabs[0].id;
   chrome.pageAction.show(lastTabId);
   getStatus((statusId)=>{
-    chrome.pageAction.setIcon({path: "icon"+statusId+".png", tabId: lastTabId});
+    chrome.pageAction.setIcon({path: "icon"+statusId+".jpg", tabId: lastTabId});
   });
 });
 
@@ -95,7 +150,7 @@ chrome.pageAction.onClicked.addListener(function(tab) {
   //console.log('CLICKED');
   lastTabId = tab.id;
   toogleStatus((statusId)=>{
-    chrome.pageAction.setIcon({path: "icon"+statusId+".png", tabId: lastTabId});
+    chrome.pageAction.setIcon({path: "icon"+statusId+".jpg", tabId: lastTabId});
     chrome.storage.local.get(['is_working', 'working_on'], (result) => {
       if (result.hasOwnProperty('is_working') && result.hasOwnProperty('working_on')) {
         var is_working = result['is_working'];
@@ -116,7 +171,7 @@ chrome.tabs.onSelectionChanged.addListener(function(tabId, tabObj) {
   lastTabId = tabId;
   chrome.pageAction.show(lastTabId);
   getStatus((statusId)=>{
-    chrome.pageAction.setIcon({path: "icon"+statusId+".png", tabId: lastTabId});
+    chrome.pageAction.setIcon({path: "icon"+statusId+".jpg", tabId: lastTabId});
   });
   chrome.tabs.getSelected(null, (tab) => {
     if (tab) {
@@ -130,58 +185,11 @@ chrome.tabs.onRemoved.addListener(function(tabId, info) {
   delete tabToUrl[tabId];
 });
 
-function genericOnClick(info, tab) {
-  //console.log("item " + info.menuItemId + " was clicked");
-  //console.log("info: " + JSON.stringify(info));
-  //console.log("tab: " + JSON.stringify(tab));
-}
-
-var contexts = ["page","selection","link","editable","image","video","audio"];
-for (var i = 0; i < contexts.length; i++) {
-  var context = contexts[i];
-  var title = "Test '" + context + "' menu item";
-  var id = chrome.contextMenus.create({"title": title, "contexts":[context],
-                                       "onclick": genericOnClick});
-  //console.log("'" + context + "' item:" + id);
-}
-
-function enableButton() {
-  chrome.storage.local.set({'working_status': 1}, ()=>{
-    chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
-      //console.log('ENABLED_BACK');
-      chrome.pageAction.setIcon({path: "icon1.png", tabId: tabs[0].id});
-    });
-  });
-}
-
-function disableButton() {
-  chrome.storage.local.set({'working_status': 0}, ()=>{
-    chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
-      //console.log('DISABLED_BACK');
-      chrome.pageAction.setIcon({path: "icon0.png", tabId: tabs[0].id});
-    });
-  });
-}
-
 chrome.runtime.onMessage.addListener(
   function(request, sender, sendResponse){
     window[request.msg]();
   }
 );
-
-chrome.runtime.onInstalled.addListener(function (object) {
-  chrome.storage.local.get(['user_id'], (result) => {
-    var userId = result['user_id'];
-    getConfiguration().then(config => {
-      if (config.isUserStudy) {
-        var url = config.initialSurveyUrl + userId;
-        chrome.tabs.create({url: url}, function (tab) {
-          console.log("New tab launched");
-        });
-      }
-    });
-  });
-});
 
 /*
 chrome.windows.onFocusChanged.addListener((window) => {
