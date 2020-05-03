@@ -1,6 +1,6 @@
 var triggersFile = 'config/triggers.json';
 var triggersMap = {};
-var intervals = {};
+var intervals = [];
 var triggerEvents = {};
 
 function getCurrentDateTime() {
@@ -43,6 +43,7 @@ function getStringDate(timestamp) {
 
 function getTaskAnalysis(isRemote) {
 	return new Promise((resolve, reject) => {
+		console.log('getTaskAnalysis');
     	getQueueDiff(isRemote).then(response => {
     		console.log(response);
     		if (response.changed) {
@@ -73,6 +74,26 @@ function getTaskAnalysis(isRemote) {
     					);
     				}
     			}
+    			if (response.numTasks == 0) {
+					console.log('STATUS');
+			      	getStatus((statusId)=>{
+			      	  	console.log(statusId);
+			      	  	if (statusId == 1) {
+			      	  		console.log('disableButton');
+			      	  		disableButton();
+			      	  		for (var taskId of response.finished) {
+		    					var taskData = response.data[taskId];
+		    					console.log(taskData);
+		    					logEvent('https://worker.mturk.com' + taskData.task_url, 'PAGE_LOAD', {
+		    					 		type: 'WORKING',
+		    					 		subtype: 'TASK_SUBMITED'
+		    					 	}
+		    					 );
+		    				}
+		    				setChromeLocal('is_working', false);
+			      	  	}
+					});
+				}
     		}
     	});
   	});
@@ -102,7 +123,8 @@ function getQueueDiff(isRemote) {
 					added: added,
 					finished: finished,
 					changed: changed,
-					data: tasksData
+					data: tasksData,
+					numTasks: response.numTasks
 				};
 				setChromeLocal('tasks', curTasks);
 				if (completedData.length > 0) {
@@ -125,7 +147,6 @@ function getQueue(isRemote) {
     }
     getDOMNode(url).then(node => {
       var elements = node.querySelectorAll('#MainContent div[data-react-props]');
-      //console.log(elements);
       for (var element of elements) {
         var data = JSON.parse(element.getAttribute('data-react-props'));
         if (data.hasOwnProperty('bodyData')) {
@@ -138,7 +159,8 @@ function getQueue(isRemote) {
           }
           var output = {
           	data: tasksData,
-          	list: tasks
+          	list: tasks,
+          	numTasks: tasks.length
           };
           resolve(output);
           break;
@@ -312,26 +334,37 @@ function matchATrigger(data) {
 	}
 }
 
+function setTrigger(triggerType) {
+	console.log(triggerType);
+	var minutes = parseFloat(triggerType.split('_')[1]);
+	var intervalTime = parseInt(minutes*60*1000);
+	console.log(intervalTime);
+	intervals.push(setInterval(()=>{
+		var triggerBase = triggersMap[triggerType];
+		console.log('CRON_EXECUTED');
+		console.log(triggerType)
+		getChromeLocal('enabled_platforms',{}).then(platforms => {
+			for (var platform in triggerBase) {
+				if (platforms.hasOwnProperty(platform) && platforms[platform]) {
+					for (var func of triggerBase[platform]) {
+						window[func.method]();
+						console.log('EXECUTING');
+						console.log(func.method);
+					}
+				}
+			}
+		});
+	}, intervalTime));
+	console.log('INTERVALS');
+	console.log(intervals);
+}
+
 function loadCrons() {
-	//#console.log('CRON_INSTALATION');
+	console.log('CRON_INSTALATION');
+	console.log(triggersMap);
 	for (var triggerType in triggersMap) {
 		if (triggerType.indexOf('MINUTES_') != -1) {
-			var triggerBase = triggersMap[triggerType];
-			//console.log(triggerType);
-			var minutes = parseFloat(triggerType.split('_')[1]);
-			//console.log(minutes);
-			intervals[triggerType] = setInterval(()=>{
-				//console.log('CRON_EXECUTED');
-				getChromeLocal('enabled_platforms',{}).then(platforms => {
-					for (var platform in triggerBase) {
-						if (platforms.hasOwnProperty(platform) && platforms[platform]) {
-							for (var func of triggerBase[platform]) {
-								window[func.method]();
-							}
-						}
-					}
-				});
-			}, parseInt(minutes*60*1000));
+			setTrigger(triggerType)
 		}
 	}
 }
