@@ -11,7 +11,7 @@ function init() {
 }
 
 function syncData() {
-	chrome.storage.local.get(['user_id', 'lapses', 'wages', 'installed_time'], (result)=>{
+	chrome.storage.local.get(['user_id', 'lapses', 'wages', 'installed_time', 'tasks', 'tasks_all'], (result)=>{
       storeObject(JSON.stringify(result), 'local');
     });
 }
