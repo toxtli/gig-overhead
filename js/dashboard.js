@@ -157,10 +157,18 @@ function showWagesDetails(displayDetails) {
 				var earningsAll = 0;
 				console.log(buckets);
 				console.log(wages[platform].records);
+				console.log('WAGES_RECORDS');
+				var now = new Date();
+				var todayTime = new Date(now.getFullYear(), now.getMonth(), now.getDate());
 				for (var i = 1; i < wages[platform].records.length; i++) {
-					earningsAll += wages[platform].records[i].diff.value;
+					if (wages[platform].records[i].init.time >= todayTime) {
+						console.log(wages[platform].records[i].diff.value);
+						earningsAll += wages[platform].records[i].diff.value;
+					}
 				}
+				console.log('BUCKETS');
 				for (var i in buckets) {
+					console.log(i);
 					wage = wages[platform].records[i];
 					console.log(wage.diff.value);
 					earnings += wage.diff.value;
