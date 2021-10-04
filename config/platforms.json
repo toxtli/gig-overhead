@@ -294,5 +294,36 @@
 				"subtype": "TASKS_PREVIEW"
 			}
 		]
+	},
+	{
+		"name": "TOLOKA",
+		"urls": [
+			{
+				"url": "https://toloka.yandex.com/tasks",
+				"type": "SEARCHING",
+				"subtype": "TASKS_LIST"
+			},
+			{
+				"url": "https://toloka.yandex.com/task/(.*)",
+				"type": "WORKING",
+				"subtype": "TASK_STARTED"
+			},
+			{
+				"url": "https://toloka.yandex.com/task/(.*)",
+				"type": "WORKING",
+				"subtype": "TASK_SUBMITED",
+				"js": {
+					"selector": ".base-modal-popup-header__title",
+					"action": "equal",
+					"value": "Thank you",
+					"wait": true
+				}
+			},
+			{
+				"url": "https://toloka.yandex.com/messages(.*)",
+				"type": "COMMUNICATION",
+				"subtype": "MESSAGES_READ"
+			}
+		]
 	}
 ]
