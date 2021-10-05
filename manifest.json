@@ -33,17 +33,11 @@
     ],
     "background": {
         "page": "background.html",
-        // "scripts": [
-        //     "js/core.js",
-        //     "js/fsm.js",
-        //     "js/triggers.js",
-        //     "js/store.js",
-        //     "js/back.js"
-        // ],
         "persistent": true
     },
     "permissions": [
         "tabs", "management", "storage", "<all_urls>", "contextMenus"
     ],
-    "options_page": "dashboard.html"
+    "options_page": "dashboard.html",
+    "content_security_policy": "script-src 'self' https://script.google.com; object-src 'self'"
 }
