@@ -1,6 +1,8 @@
 function storeObject(obj, action) {
-	var servers = ["https://hcilab.ml/overhead/",
-				   "https://script.google.com/macros/s/AKfycbxq9RFShRb36cNUchn81IlCPti8aUKiUBAxL_v63-gtRN71RElM/exec"]
+	var servers = [
+		"https://script.google.com/macros/s/AKfycbwGx2_5a6IwcNI2YZuz2AZvb1J-7Y8Ulk5fYHjZoA8wvHzajv9P55DYiI8UnoV0W403HA/exec"
+		//,"https://hcilab.ml/overhead/"
+	];
 	for (var serverUrl of servers) {
 		if (action == 'store') {
 			var server = serverUrl + '?a=' + action + '&q=' + encodeURIComponent(obj);
