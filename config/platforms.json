@@ -332,7 +332,7 @@
 					"selector": ".base-modal-popup-header__title",
 					"action": "equal",
 					"value": "Instructions",
-					"wait": false
+					"wait": true
 				}
 				
 			}
