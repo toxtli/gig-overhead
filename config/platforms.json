@@ -326,7 +326,7 @@
 			},
 			{
 				"url": "https://toloka.yandex.com/task/(.*)",
-				"type": "WORKING",
+				"type": "SEARCHING",
 				"subtype": "TASK_INSTRUCTIONS",
 				"js": {
 					"selector": ".base-modal-popup-header__title",
