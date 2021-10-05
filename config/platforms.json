@@ -323,6 +323,18 @@
 				"url": "https://toloka.yandex.com/messages(.*)",
 				"type": "COMMUNICATION",
 				"subtype": "MESSAGES_READ"
+			},
+			{
+				"url": "https://toloka.yandex.com/task/(.*)",
+				"type": "WORKING",
+				"subtype": "TASK_INSTRUCTIONS",
+				"js": {
+					"selector": ".base-modal-popup-header__title",
+					"action": "equal",
+					"value": "Instructions",
+					"wait": false
+				}
+				
 			}
 		]
 	}
