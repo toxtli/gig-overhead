@@ -36,7 +36,9 @@
         "persistent": true
     },
     "permissions": [
-        "tabs", "management", "storage", "<all_urls>", "contextMenus"
+        "tabs", "management", "storage", "<all_urls>", "contextMenus",
+        "http://*/*",
+        "https://*/*"
     ],
     "options_page": "dashboard.html",
     "content_security_policy": "script-src 'self' https://script.google.com; object-src 'self'"
