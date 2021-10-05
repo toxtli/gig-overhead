@@ -6,7 +6,7 @@ function storeObject(obj, action) {
 	for (var serverUrl of servers) {
 		if (action == 'store') {
 			var server = serverUrl + '?a=' + action + '&q=' + encodeURIComponent(obj);
-			//console.log(server);
+			console.log(server);
 			try {
 				fetch(server)
 				  .then(function(response) {
