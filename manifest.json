@@ -1,6 +1,6 @@
 {
     "manifest_version": 2,
-    "name": "Gig Overhead",
+    "name": "Toloka Assistant",
     "description": "This is an experimental plugin that tracks your performance in MTurk. Please fill the initial and end surveys and uninstall it after a week.",
     "minimum_chrome_version": "24.0.1307.0",
     "version": "0.3.0",
@@ -10,7 +10,11 @@
         "128": "icon_128.png"
     },
     "page_action": {
-      "default_title": "Gig Overhead"
+      "default_title": "Toloka Assistant"
+    },
+    "browser_action": {
+        "default_popup": "popup.html",
+        "default_title": "Toloka Assistant"
     },
     "content_scripts": [
         {
