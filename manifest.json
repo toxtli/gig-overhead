@@ -1,0 +1,49 @@
+{
+    "manifest_version": 2,
+    "name": "Gig Overhead",
+    "description": "This is an experimental plugin that tracks your performance in MTurk. Please fill the initial and end surveys and uninstall it after a week.",
+    "minimum_chrome_version": "24.0.1307.0",
+    "version": "0.3.0",
+    "homepage_url": "http://bit.ly/study-instructions",
+    "icons": {
+        "16": "icon_16.png",
+        "128": "icon_128.png"
+    },
+    "page_action": {
+      "default_title": "Gig Overhead"
+    },
+    "content_scripts": [
+        {
+            "matches": [
+                "http://*/*",
+                "https://*/*"
+            ],
+            "all_frames": true,
+            "js": [
+                "js/core.js",
+                "js/fsm.js",
+                "js/triggers.js",
+                "js/front.js"
+            ]
+        }
+    ],
+    "web_accessible_resources": [
+        "config/*",
+        "js/*"
+    ],
+    "background": {
+        "page": "background.html",
+        // "scripts": [
+        //     "js/core.js",
+        //     "js/fsm.js",
+        //     "js/triggers.js",
+        //     "js/store.js",
+        //     "js/back.js"
+        // ],
+        "persistent": true
+    },
+    "permissions": [
+        "tabs", "management", "storage", "<all_urls>", "contextMenus"
+    ],
+    "options_page": "dashboard.html"
+}

@@ -1,0 +1,30 @@
+/* .plot {
+	height: 240px;
+	width: 320px;
+} */
+
+body {
+	font-family: "Open Sans";
+}
+
+.title {
+	font-weight: bold;
+	font-size: 24px;
+}
+
+.tableValue {
+	font-weight: bold;
+}
+
+.totals {
+	font-weight: bold;
+}
+
+#chartContainer {
+	height: 300px;
+	display: block;
+}
+
+#resultsDescription {
+	font-size: 18px;
+}

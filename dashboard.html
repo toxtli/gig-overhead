@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<link rel="stylesheet" href="css/tabulator.css">
+	<link rel="stylesheet" href="css/dashboard.css">
+	<script src="js/core.js"></script>
+	<script src="js/store.js"></script>
+	<script src="libs/canvasjs.js"></script>
+	<script src="libs/tabulator.js"></script>
+	<title>DASHBOARD</title>
+</head>
+<body>
+	<div class="title">
+		DASHBOARD <button id="resetButton" hidden>RESET</button>
+	</div>
+	<br>
+	<div id="resultsDescription">
+		<div id="isUserStudy" hidden>
+			Thanks for participating in this user study. <span id="remainingTime"></span>
+		</div>
+		Assuming everyone you worked for pays you, you will get a total of $<span class="totals" id="totalEarnings">0.00</span> from today's work.
+		<br>
+		You spent <span class="totals" id="timeWorking">0</span> minutes doing paid work and <span class="totals" id="timeOverhead">0</span> minutes doing unpaid work.
+		<br>
+		Your hourly wage is $<span class="totals" id="hourlyWage">0.00</span> per hour.
+		<br>
+		Note: You will see the values changing as requesters authorize your tasks.
+	</div>
+	<br>
+	<div id="chartContainer"></div>
+	<br>
+	<button id="toogleDetails">SHOW DETAILS</button>
+	<br>
+	<div id="details" hidden>
+		<div id="wageTable"></div>
+		<div id="timeTable"></div>
+	</div>
+	<script src="js/dashboard.js"></script>
+</body>
+</html>

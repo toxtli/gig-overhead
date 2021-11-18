@@ -1,0 +1,39 @@
+{
+	"triggers": [{
+		"platform": "MTURK",
+		"method": "mturkEarningsRemote",
+		"events": [
+			{"type": "MINUTES_1"}
+		]
+	},{
+		"platform": "MTURK",
+		"method": "mturkTasksRemote",
+		"events": [
+			{"type": "MINUTES_0.5"}
+		]
+	},{
+		"platform": "MTURK",
+		"method": "mturkFilesRemote",
+		"events": [
+			{"type": "MINUTES_60"}
+		]
+	},{
+		"platform": "MTURK",
+		"method": "mturkEarningsLocal",
+		"events": [
+			{"type": "WORKER_EARNINGS_DETAILS", "value": "PAGE_LOAD"}
+		]
+	},{
+		"platform": "MTURK",
+		"method": "allStarted",
+		"events": [
+			{"type": "TASK_STARTED", "value": "PAGE_LOAD"}
+		]
+	},{
+		"platform": "MTURK",
+		"method": "allSubmited",
+		"events": [
+			{"type": "TASK_SUBMITED", "value": "PAGE_LOAD"}
+		]
+	}]
+}
